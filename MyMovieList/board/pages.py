@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, abort
 from .models import db, Movie, Genre, MovieStats
 from sqlalchemy.orm import joinedload
 
@@ -28,6 +28,26 @@ def home():
             movies_by_genre[genre] = movies
     
     return render_template("index.html", movies_by_genre=movies_by_genre)
+
+@bp.route('/genre/<int:genre_id>')
+def genre_movies(genre_id):
+    # Get the genre by ID or return 404 if not found
+    genre = Genre.query.get_or_404(genre_id)
+    
+    # Get all movies in this genre, ordered by rating (highest first)
+    movies = Movie.query\
+        .join(Movie.genres)\
+        .filter(Genre.id == genre_id)\
+        .options(joinedload(Movie.stats))\
+        .order_by(Movie.rating.desc())\
+        .all()
+    
+    return render_template(
+        'genre_movies.html',
+        genre=genre,
+        movies=movies,
+        title=f"{genre.name} Movies"
+    )
 
 @bp.route('/search', methods=['GET'])
 def search():

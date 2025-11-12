@@ -31,6 +31,14 @@ def fix_specific_posters():
             {
                 'title': 'The Usual Suspects',
                 'poster_url': 'https://m.media-amazon.com/images/M/MV5BOTE5MDUxZDUtZWZmZC00NDVmLWFhOGQtNWI2YTc4NzY3MGQ0XkEyXkFqcGc@._V1_.jpg'
+            },
+            {
+                'title': 'Up',
+                'poster_url': 'https://m.media-amazon.com/images/M/MV5BNmI1ZTc5MWMtMDYyOS00ZDc2LTkzOTAtNjQ4NWIxNjYyNDgzXkEyXkFqcGc@._V1_.jpg'
+            },
+            {
+                'title': 'Gone Girl',
+                'poster_url': 'https://m.media-amazon.com/images/M/MV5BMTk0MDQ3MzAzOV5BMl5BanBnXkFtZTgwNzU1NzE3MjE@._V1_.jpg'
             }
         ]
         
