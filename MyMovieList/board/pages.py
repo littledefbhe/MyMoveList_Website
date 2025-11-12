@@ -46,16 +46,23 @@ def search():
                 Movie.title.ilike(f'%{query}%')
             ).order_by(Movie.rating.desc()).all()
             
+            # Create a special 'Search Results' genre for the search results
+            search_genre = type('Genre', (), {'name': 'Search Results', 'id': 0})
+            
+            # Create a dictionary with search results to match the movies_by_genre structure
+            movies_by_genre = {search_genre: movies}
+            
             return render_template("index.html", 
-                                movies=movies, 
+                                movies_by_genre=movies_by_genre,
                                 search_query=query,
                                 search_results_count=len(movies))
                                 
         except Exception as e:
             print(f"Search error: {str(e)}")
             # Return empty results on error
+            search_genre = type('Genre', (), {'name': 'Search Results', 'id': 0})
             return render_template("index.html",
-                                movies=[],
+                                movies_by_genre={search_genre: []},
                                 search_query=query,
                                 search_results_count=0,
                                 error="An error occurred during search.")
