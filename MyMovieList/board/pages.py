@@ -8,13 +8,26 @@ bp = Blueprint("pages", __name__)
 # Define routes using the blueprint
 @bp.route("/")
 def home():
-    # Get top 10 movies ordered by rating with their genres and stats
-    movies = Movie.query.options(
-        joinedload(Movie.genres),
-        joinedload(Movie.stats)
-    ).order_by(Movie.rating.desc()).limit(10).all()
+    # Get all genres that have movies
+    genres = Genre.query.join(Genre.movies).group_by(Genre.id).order_by(Genre.name).all()
     
-    return render_template("index.html", movies=movies)
+    # Create a dictionary to hold movies by genre
+    movies_by_genre = {}
+    
+    # For each genre, get top 5 movies
+    for genre in genres:
+        movies = Movie.query\
+            .join(Movie.genres)\
+            .filter(Genre.id == genre.id)\
+            .options(joinedload(Movie.stats))\
+            .order_by(Movie.rating.desc())\
+            .limit(5)\
+            .all()
+            
+        if movies:  # Only add genres that have movies
+            movies_by_genre[genre] = movies
+    
+    return render_template("index.html", movies_by_genre=movies_by_genre)
 
 @bp.route('/search', methods=['GET'])
 def search():
