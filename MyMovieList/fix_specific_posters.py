@@ -27,6 +27,10 @@ def fix_specific_posters():
             {
                 'title': 'The Shawshank Redemption',
                 'poster_url': 'https://m.media-amazon.com/images/M/MV5BMDAyY2FhYjctNDc5OS00MDNlLThiMGUtY2UxYWVkNGY2ZjljXkEyXkFqcGc@._V1_.jpg'
+            },
+            {
+                'title': 'The Usual Suspects',
+                'poster_url': 'https://m.media-amazon.com/images/M/MV5BOTE5MDUxZDUtZWZmZC00NDVmLWFhOGQtNWI2YTc4NzY3MGQ0XkEyXkFqcGc@._V1_.jpg'
             }
         ]
         
