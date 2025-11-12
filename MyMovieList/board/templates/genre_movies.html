@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - MyMovieList{% endblock %}
+{% block title %}{{ genre.name }} Movies - MyMovieList{% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">{{ genre.name }} Movies</h1>
-        <a href="{{ url_for('pages.home') }}" class="btn btn-outline-secondary">
+    <div class="section-header">
+        <h2 class="section-title">{{ genre.name }} Movies</h2>
+        <a href="{{ url_for('pages.home') }}" class="view-all">
             <i class="bi bi-arrow-left"></i> Back to Home
         </a>
     </div>
     
-    <section class="genre-section">
-        <div class="movie-grid">
+    <div class="movie-grid">
             {% for movie in movies %}
             <div class="movie-card">
                 <div class="movie-poster-container">
@@ -49,6 +48,6 @@
             </div>
             {% endfor %}
         </div>
-    </section>
+    </div>
 </div>
 {% endblock %}
