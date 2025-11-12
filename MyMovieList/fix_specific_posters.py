@@ -39,6 +39,14 @@ def fix_specific_posters():
             {
                 'title': 'Gone Girl',
                 'poster_url': 'https://m.media-amazon.com/images/M/MV5BMTk0MDQ3MzAzOV5BMl5BanBnXkFtZTgwNzU1NzE3MjE@._V1_.jpg'
+            },
+            {
+                'title': 'The Imitation Game',
+                'poster_url': 'https://m.media-amazon.com/images/M/MV5BNjI3NjY1Mjg3MV5BMl5BanBnXkFtZTgwMzk5MDQ3MjE@._V1_FMjpg_UX1000_.jpg'
+            },
+            {
+                'title': 'The Social Network',
+                'poster_url': 'https://m.media-amazon.com/images/M/MV5BMjlkNTE5ZTUtNGEwNy00MGVhLThmZjMtZjU1NDE5Zjk1NDZkXkEyXkFqcGc@._V1_.jpg'
             }
         ]
         
