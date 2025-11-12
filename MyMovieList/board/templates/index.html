@@ -27,7 +27,7 @@
                     <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
                     <div class="movie-rating">
                         <i class="bi bi-star-fill"></i>
-                        <span>{{ "%.1f"|format(movie.rating) }}</span>
+                        <span>{{ "%.1f"|format(movie.rating) if movie.rating else 'N/A' }}</span>
                     </div>
                 </div>
                 <div class="movie-info">
