@@ -5,12 +5,12 @@ db = SQLAlchemy()
 
 # Association table for many-to-many relationship between movies and genres
 movie_genres = db.Table('movie_genres',
-    db.Column('movie_id', db.Integer, db.ForeignKey('movie.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genre.id'), primary_key=True)
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
 )
 
 class Movie(db.Model):
-    __tablename__ = 'movie'
+    __tablename__ = 'movies'
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -32,7 +32,7 @@ class Movie(db.Model):
         return f'<Movie {self.title} ({self.release_year})>'
 
 class Genre(db.Model):
-    __tablename__ = 'genre'
+    __tablename__ = 'genres'
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
@@ -43,7 +43,7 @@ class Genre(db.Model):
 class MovieStats(db.Model):
     __tablename__ = 'movie_stats'
     
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True)
     ratings_count = db.Column(db.Integer, default=0)
     reviews_count = db.Column(db.Integer, default=0)
     watchlist_count = db.Column(db.Integer, default=0)
