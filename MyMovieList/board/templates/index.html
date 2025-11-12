@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Top Rated Movies - MyMovieList{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if search_query %}
+    <div class="search-results-header">
+        Found <strong>{{ search_results_count }}</strong> results for "<strong>{{ search_query }}</strong>"
+        <a href="{{ url_for('pages.home') }}" class="ms-3 text-muted">
+            <i class="bi bi-x-lg"></i> Clear search
+        </a>
+    </div>
+    {% else %}
+    <div class="section-header">
+        <h2 class="section-title">Top Rated Movies</h2>
+        <div class="section-actions">
+            <button class="btn btn-sm btn-outline active">All</button>
+            <button class="btn btn-sm btn-outline">Action</button>
+            <button class="btn btn-sm btn-outline">Drama</button>
+            <button class="btn btn-sm btn-outline">Comedy</button>
+            <button class="btn btn-sm btn-outline">Thriller</button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="movie-list">
+        {% for movie in movies %}
+        <div class="movie-container">
+            <div class="movie-poster-container">
+                <div class="rank-badge">{{ loop.index }}</div>
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+            </div>
+            <div class="movie-details">
+                <div class="movie-header">
+                    <h3 class="movie-title">{{ movie.title }} <span class="release-year">({{ movie.release_year }})</span></h3>
+                    <div class="movie-rating">
+                        <i class="bi bi-star-fill"></i>
+                        <span>{{ "%.1f"|format(movie.rating) }}/10</span>
+                    </div>
+                </div>
+                <div class="movie-meta">
+                    <span class="certification">{{ movie.certification }}</span>
+                    <span class="runtime">{{ movie.runtime_minutes }} min</span>
+                    <span class="genre">{{ movie.genres|map(attribute='name')|join(', ') }}</span>
+                </div>
+                <div class="movie-actions">
+                    <button class="btn-watchlist">+ Watchlist</button>
+                    <button class="btn-rate">Rate</button>
+                    <button class="btn-review">Write Review</button>
+                </div>
+                <div class="movie-description">
+                    <h4>Overview</h4>
+                    <p>{{ movie.overview }}</p>
+                </div>
+                <div class="movie-stats">
+                    <div class="stat">
+                        <span class="stat-value">{% if movie.stats %}{{ movie.stats.ratings_count|format_number }}{% else %}0{% endif %}</span>
+                        <span class="stat-label">Ratings</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{% if movie.stats %}{{ movie.stats.reviews_count|format_number }}{% else %}0{% endif %}</span>
+                        <span class="stat-label">Reviews</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{% if movie.stats %}{{ movie.stats.watchlist_count|format_number }}{% else %}0{% endif %}</span>
+                        <span class="stat-label">Watchlist</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
