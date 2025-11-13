@@ -9,6 +9,7 @@ movie_genres = db.Table('movie_genres',
     db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
 )
 
+
 class Movie(db.Model):
     __tablename__ = 'movies'
     
