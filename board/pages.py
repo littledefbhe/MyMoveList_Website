@@ -52,41 +52,33 @@ def genre_movies(genre_id):
 
 @bp.route('/search', methods=['GET'])
 def search():
-    try:
-        query = request.args.get('q', '').strip()
-        
-        if not query:
-            return redirect(url_for('pages.home'))
-        
-        # Basic search that looks for movies where the title contains the search query
-        movies = Movie.query.options(
-            joinedload(Movie.genres),
-            joinedload(Movie.stats)
-        ).filter(
-            Movie.title.ilike(f'%{query}%')
-        ).order_by(Movie.rating.desc()).all()
-        
-        # Create a special 'Search Results' genre for the search results
-        search_genre = type('Genre', (), {'name': 'Search Results', 'id': 0})
-        
-        # Group movies by their primary genre for better organization
-        movies_by_genre = {search_genre: []}
-        for movie in movies:
-            if movie.genres:
-                primary_genre = movie.genres[0]
-                if primary_genre not in movies_by_genre:
-                    movies_by_genre[primary_genre] = []
-                movies_by_genre[primary_genre].append(movie)
-            else:
-                movies_by_genre[search_genre].append(movie)
-        
-        return render_template(
-            'search_results.html',
-            query=query,
-            movies_by_genre=movies_by_genre,
-            title=f'Search: {query}'
-        )
-            
-    except Exception as e:
-        print(f"Error processing search: {str(e)}")
-        return render_template('error.html', error_message="An error occurred while processing your search.")
+    query = request.args.get('q', '').strip()
+    
+    if not query:
+        return redirect(url_for('pages.home'))
+    
+    # Search for movies where the title contains the search query
+    movies = Movie.query.filter(
+        Movie.title.ilike(f'%{query}%')
+    ).order_by(Movie.rating.desc()).all()
+    
+    return render_template(
+        'search_results.html',
+        query=query,
+        movies=movies,
+        title=f'Search: {query}'
+    )
+
+@bp.route('/movie/<int:movie_id>')
+def movie_detail(movie_id):
+    # Get the movie by ID or return 404 if not found
+    movie = Movie.query.options(
+        joinedload(Movie.genres),
+        joinedload(Movie.stats)
+    ).get_or_404(movie_id)
+    
+    return render_template(
+        'movie_detail.html',
+        movie=movie,
+        title=movie.title
+    )

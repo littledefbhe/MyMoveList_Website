@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" class="img-fluid rounded" alt="{{ movie.title }}">
+            {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 450px; width: 300px;">
+                    <span class="text-muted">No image available</span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h1>{{ movie.title }} <small class="text-muted">({{ movie.release_year }})</small></h1>
+            
+            {% if movie.rating %}
+            <div class="mb-3">
+                <span class="badge bg-warning text-dark">
+                    {{ "%.1f"|format(movie.rating) }} <i class="bi bi-star-fill"></i>
+                </span>
+            </div>
+            {% endif %}
+            
+            {% if movie.genres %}
+            <div class="mb-3">
+                {% for genre in movie.genres %}
+                    <span class="badge bg-secondary me-1">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %n            
+            {% if movie.runtime_minutes %}
+            <p><strong>Runtime:</strong> {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</p>
+            {% endif %}
+            
+            {% if movie.certification %}
+            <p><strong>Rating:</strong> {{ movie.certification }}</p>
+            {% endif %}
+            
+            {% if movie.overview %}
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Overview</h5>
+                    <p class="card-text">{{ movie.overview }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <a href="{{ url_for('pages.home') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
