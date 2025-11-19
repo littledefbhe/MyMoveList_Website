@@ -23,13 +23,6 @@
             </div>
             {% endif %}
             
-            {% if movie.genres %}
-            <div class="mb-3">
-                {% for genre in movie.genres %}
-                    <span class="badge bg-secondary me-1">{{ genre.name }}</span>
-                {% endfor %}
-            </div>
-            {% endif %n            
             {% if movie.runtime_minutes %}
             <p><strong>Runtime:</strong> {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</p>
             {% endif %}
