@@ -212,3 +212,43 @@ def my_library():
         title='My Library',
         total_movies=len(watchlist_movies)
     )
+
+@bp.route('/api/watchlist/toggle', methods=['POST'])
+@login_required
+def toggle_watchlist():
+    try:
+        data = request.get_json()
+        movie_id = data.get('movie_id')
+        
+        if not movie_id:
+            return jsonify({'error': 'Movie ID is required'}), 400
+            
+        movie = Movie.query.get(movie_id)
+        if not movie:
+            return jsonify({'error': 'Movie not found'}), 404
+            
+        # Toggle watchlist status
+        in_watchlist = current_user.is_in_watchlist(movie)
+        
+        if in_watchlist:
+            current_user.remove_from_watchlist(movie)
+            status = 'removed'
+            button_text = 'Add to Watchlist'
+        else:
+            current_user.add_to_watchlist(movie)
+            status = 'added'
+            button_text = 'Remove from Watchlist'
+        
+        # Get updated watchlist count for the movie
+        watchlist_count = movie.stats.watchlist_count if movie.stats and hasattr(movie.stats, 'watchlist_count') else 0
+        
+        return jsonify({
+            'status': status,
+            'button_text': button_text,
+            'watchlist_count': watchlist_count,
+            'movie_id': movie_id
+        })
+        
+    except Exception as e:
+        print(f"Error toggling watchlist: {str(e)}")
+        return jsonify({'error': 'An error occurred while updating your watchlist'}), 500
