@@ -43,6 +43,30 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+    def add_to_watchlist(self, movie):
+        """Add a movie to the user's watchlist if not already present."""
+        if not self.is_in_watchlist(movie):
+            self.watchlist.append(movie)
+            if movie.stats:
+                movie.stats.watchlist_count += 1
+            db.session.commit()
+            return True
+        return False
+        
+    def remove_from_watchlist(self, movie):
+        """Remove a movie from the user's watchlist if present."""
+        if self.is_in_watchlist(movie):
+            self.watchlist.remove(movie)
+            if movie.stats and movie.stats.watchlist_count > 0:
+                movie.stats.watchlist_count -= 1
+            db.session.commit()
+            return True
+        return False
+        
+    def is_in_watchlist(self, movie):
+        """Check if a movie is in the user's watchlist."""
+        return self.watchlist.filter(watchlist.c.movie_id == movie.id).count() > 0
+        
     def __repr__(self):
         return f'<User {self.username}>'
 

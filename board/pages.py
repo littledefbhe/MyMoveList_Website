@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort, flash
-from flask_login import login_user, logout_user, login_required, current_user
-from werkzeug.security import check_password_hash, generate_password_hash
-from .models import db, Movie, Genre, MovieStats, User
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_required, current_user, login_user, logout_user
+from werkzeug.urls import url_parse
+from .models import db, User, Movie, Genre, MovieStats
 from .forms import LoginForm, RegistrationForm
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
@@ -73,12 +73,16 @@ def search():
     )
 
 @bp.route('/movie/<int:movie_id>')
+@login_required
 def movie_detail(movie_id):
     # Get the movie by ID or return 404 if not found
     movie = Movie.query.options(
         joinedload(Movie.genres),
         joinedload(Movie.stats)
     ).get_or_404(movie_id)
+    
+    # Check if movie is in user's watchlist
+    in_watchlist = current_user.is_in_watchlist(movie) if current_user.is_authenticated else False
     
     # Get similar movies (movies that share at least one genre, excluding the current movie)
     similar_movies = []
@@ -123,6 +127,7 @@ def movie_detail(movie_id):
         'movie_detail.html',
         movie=movie,
         similar_movies=similar_movies,
+        in_watchlist=in_watchlist,
         title=f"{movie.title} ({movie.release_year})" if movie.release_year else movie.title
     )
 
