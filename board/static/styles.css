@@ -62,8 +62,159 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     min-height: 100vh;
+    padding-top: 120px; /* Space for fixed header + nav */
+}
+
+/* Header container */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--background-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Top bar with logo, search, and auth */
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Search bar container */
+.header .search-container {
+    flex: 1;
+    max-width: 500px !important;
+    margin: 0 20px !important;
+    position: relative !important;
+}
+
+/* Search form */
+.header .search-form {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.header .search-bar {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.header .search-input {
+    width: 100% !important;
+    padding: 8px 45px 8px 40px !important;
+    border-radius: 20px !important;
+    border: 1px solid #333 !important;
+    background-color: #1e1e1e !important;
+    color: #fff !important;
+    font-size: 0.95rem !important;
+    height: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    transition: none !important;
+}
+
+.header .search-input:focus {
+    outline: none !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px rgba(9, 64, 229, 0.2) !important;
+}
+
+.header .search-icon {
+    position: absolute !important;
+    left: 15px !important;
+    color: #6c757d !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.header .search-button {
+    position: absolute !important;
+    right: 5px !important;
+    top: 5px !important;
+    bottom: 5px !important;
+    transform: none !important;
+    background: var(--accent-color) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 15px !important;
+    padding: 0 12px !important;
+    font-size: 0.85rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: auto !important;
+    width: auto !important;
+    min-width: 60px !important;
+    margin: 0 !important;
+}
+
+.header .search-button:hover {
+    background-color: var(--accent-hover) !important;
+    transform: none !important;
+}
+
+/* Auth buttons */
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Main Navigation */
+.main-nav {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top: 1px solid #333;
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 30px;
+}
+
+.nav-links li a {
+    color: #e5e5e5;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.nav-links li a:hover,
+.nav-links li.active a {
+    color: var(--accent-color);
+}
+
+/* Ensure content doesn't go under fixed header */
+.main-content {
     position: relative;
-    padding-top: 120px; /* Make space for fixed header */
+    z-index: 1;
 }
 
 /* Ensure all text is visible on dark background */

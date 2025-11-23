@@ -14,7 +14,7 @@
 </head>
 <body>
     <header class="header">
-        <div class="header-content container">
+        <div class="header-top">
             <h1>MyMovieList</h1>
             <div class="search-container">
                 <form action="{{ url_for('pages.search') }}" method="GET" class="search-form" id="searchForm">
@@ -59,7 +59,7 @@
         
         <!-- Main Navigation -->
         <nav class="main-nav">
-            <div class="container">
+            <div class="nav-container">
                 <ul class="nav-links">
                     <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}"><a href="{{ url_for('pages.home') }}">Home</a></li>
                     <li class="{% if request.endpoint == 'pages.top_movies' %}active{% endif %}"><a href="{{ url_for('pages.top_movies') }}">Top Movies</a></li>
