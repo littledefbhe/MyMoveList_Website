@@ -103,6 +103,33 @@
         });
     </script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <style>
+        /* Dropdown menu styles */
+        .dropdown-menu {
+            background-color: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+        }
+        
+        .dropdown-item {
+            color: #fff;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #333;
+            color: #fff;
+        }
+        
+        .dropdown-divider {
+            border-top: 1px solid #333;
+            margin: 0.5rem 0;
+        }
+        
+        /* Make header solid when scrolling */
+        .header {
+            transition: all 0.3s ease;
+        }
+    </style>
     <script>
         // Make header solid when scrolling
         window.addEventListener('scroll', function() {
