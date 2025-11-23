@@ -73,7 +73,6 @@ def search():
     )
 
 @bp.route('/movie/<int:movie_id>')
-@login_required
 def movie_detail(movie_id):
     # Get the movie by ID or return 404 if not found
     movie = Movie.query.options(
@@ -81,7 +80,7 @@ def movie_detail(movie_id):
         joinedload(Movie.stats)
     ).get_or_404(movie_id)
     
-    # Check if movie is in user's watchlist
+    # Check if movie is in user's watchlist (only for authenticated users)
     in_watchlist = current_user.is_in_watchlist(movie) if current_user.is_authenticated else False
     
     # Get similar movies (movies that share at least one genre, excluding the current movie)
