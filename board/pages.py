@@ -170,7 +170,6 @@ def signout():
     return redirect(url_for('pages.home'))
 
 @bp.route('/top-movies')
-@login_required
 def top_movies():
     # Get top 50 movies by rating, ordered highest to lowest
     top_movies = Movie.query\
@@ -180,9 +179,9 @@ def top_movies():
         .limit(50)\
         .all()
     
-    # Add watchlist status for each movie
+    # Add watchlist status for each movie (only for authenticated users)
     for movie in top_movies:
-        movie.in_watchlist = current_user.is_in_watchlist(movie)
+        movie.in_watchlist = current_user.is_in_watchlist(movie) if current_user.is_authenticated else False
     
     return render_template(
         'top_movies.html',
