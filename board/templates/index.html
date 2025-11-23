@@ -38,8 +38,10 @@
                         <span class="runtime">{{ movie.runtime_minutes }} min</span>
                     </div>
                     <div class="movie-actions">
-                        <button class="btn-watchlist" title="Add to watchlist">
-                            <i class="bi bi-plus-circle"></i>
+                        <button class="btn-watchlist {% if movie.in_watchlist %}active{% endif %}" 
+                                data-movie-id="{{ movie.id }}" 
+                                title="{% if movie.in_watchlist %}Remove from watchlist{% else %}Add to watchlist{% endif %}">
+                            <i class="bi {% if movie.in_watchlist %}bi-check-circle{% else %}bi-plus-circle{% endif %}"></i>
                         </button>
                         <button class="btn-rate" title="Rate this movie">
                             <i class="bi bi-star"></i>
