@@ -160,8 +160,8 @@
                             <span>No poster available</span>
                         </div>
                     {% endif %}
-                    <div class="movie-rating">
-                        <i class="bi bi-star-fill"></i>
+                    <div class="movie-rating" style="position: absolute !important; top: 8px !important; right: 8px !important; background: rgba(0, 0, 0, 0.8) !important; color: white !important; padding: 4px 8px !important; border-radius: 4px !important; font-size: 12px !important; font-weight: 600 !important; display: flex !important; align-items: center !important; gap: 4px !important; z-index: 2 !important;">
+                        <i class="bi bi-star-fill" style="color: #ffd700 !important;"></i>
                         <span>{{ "%.1f"|format(movie.rating) if movie.rating else 'N/A' }}</span>
                     </div>
                 </a>
