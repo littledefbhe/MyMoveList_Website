@@ -189,26 +189,15 @@ def top_movies():
 @bp.route('/my-library')
 @login_required
 def my_library():
-    # Get all movies in the user's watchlist
+    # Get all movies in the user's watchlist, ordered by title
     watchlist_movies = current_user.watchlist\
         .options(joinedload(Movie.stats))\
         .order_by(Movie.title)\
         .all()
     
-    # Group movies by first letter for better organization
-    movies_by_letter = {}
-    for movie in watchlist_movies:
-        first_letter = movie.title[0].upper() if movie.title else '#'
-        if first_letter not in movies_by_letter:
-            movies_by_letter[first_letter] = []
-        movies_by_letter[first_letter].append(movie)
-    
-    # Sort the dictionary by letter
-    movies_by_letter = dict(sorted(movies_by_letter.items()))
-    
     return render_template(
         'library.html',
-        movies_by_letter=movies_by_letter,
+        watchlist_movies=watchlist_movies,
         title='My Library',
         total_movies=len(watchlist_movies)
     )
@@ -232,12 +221,14 @@ def toggle_watchlist():
         
         if in_watchlist:
             current_user.remove_from_watchlist(movie)
-            status = 'removed'
+            status = 'removed from'
             button_text = 'Add to Watchlist'
         else:
             current_user.add_to_watchlist(movie)
-            status = 'added'
+            status = 'added to'
             button_text = 'Remove from Watchlist'
+        
+        db.session.commit()
         
         # Get updated watchlist count for the movie
         watchlist_count = movie.stats.watchlist_count if movie.stats and hasattr(movie.stats, 'watchlist_count') else 0
