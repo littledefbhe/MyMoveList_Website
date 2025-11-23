@@ -83,6 +83,19 @@ def movie_detail(movie_id):
         title=movie.title
     )
 
+@bp.route('/signin')
+def signin():
+    return render_template('auth/signin.html', title='Sign In')
+
+@bp.route('/signup')
+def signup():
+    return render_template('auth/signup.html', title='Sign Up')
+
+@bp.route('/signout')
+def signout():
+    # This is a placeholder for future implementation
+    return redirect(url_for('pages.home'))
+
 @bp.route('/top-movies')
 def top_movies():
     # Get all movies with their stats, ordered by rating (highest first)
