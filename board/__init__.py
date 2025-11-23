@@ -1,6 +1,7 @@
 import os
 from flask import Flask
-from .models import db
+from flask_login import LoginManager
+from .models import db, User
 from board import pages  # Import the pages blueprint
 
 def create_app():
@@ -18,6 +19,16 @@ def create_app():
     
     # Initialize extensions
     db.init_app(app)
+    
+    # Initialize Flask-Login
+    login_manager = LoginManager()
+    login_manager.login_view = 'pages.signin'
+    login_manager.login_message_category = 'info'
+    login_manager.init_app(app)
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
     
     # Create database tables
     with app.app_context():

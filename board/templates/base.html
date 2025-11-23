@@ -38,8 +38,22 @@
                 </form>
             </div>
             <div class="auth-buttons">
-                <a href="{{ url_for('pages.signin') }}" class="btn btn-outline">Sign In</a>
-                <a href="{{ url_for('pages.signup') }}" class="btn btn-primary">Sign Up</a>
+                {% if current_user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> {{ current_user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-bookmark"></i> Watchlist</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('pages.signout') }}"><i class="bi bi-box-arrow-right"></i> Sign Out</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('pages.signin') }}" class="btn btn-outline">Sign In</a>
+                    <a href="{{ url_for('pages.signup') }}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
             </div>
         </div>
         
@@ -57,6 +71,18 @@
     </header>
 
     <main class="main-content">
+        <div class="container mt-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
         {% block content %}{% endblock %}
     </main>
 
