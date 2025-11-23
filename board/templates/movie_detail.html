@@ -3,59 +3,60 @@
 {% block title %}{{ movie.title }} ({{ movie.release_year }}) - MyMovieList{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <!-- Movie Poster -->
-        <div class="col-md-4">
-            <div class="movie-poster-container mb-4">
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Movie Poster Column -->
+        <div class="col-12 col-md-4">
+            <div class="movie-poster-container shadow-lg rounded-3 overflow-hidden">
                 {% if movie.poster_url %}
-                    <img src="{{ movie.poster_url }}" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+                    <img src="{{ movie.poster_url }}" class="img-fluid w-100" alt="{{ movie.title }} poster">
                 {% else %}
-                    <div class="bg-dark text-white d-flex align-items-center justify-content-center rounded" 
-                         style="height: 450px; width: 100%;">
+                    <div class="bg-dark d-flex align-items-center justify-content-center" style="min-height: 600px;">
                         <span class="text-muted">No poster available</span>
                     </div>
                 {% endif %}
             </div>
             
-            <!-- Watchlist Button (for logged-in users) -->
             {% if current_user.is_authenticated %}
-                <button class="btn btn-primary w-100 mb-3" id="addToWatchlistBtn">
-                    <i class="bi bi-plus-circle"></i> Add to Watchlist
+                <button class="btn btn-primary w-100 mt-3 py-2 fw-bold" id="addToWatchlistBtn">
+                    <i class="bi bi-plus-circle me-2"></i> Add to Watchlist
                 </button>
             {% endif %}
         </div>
 
-        <!-- Movie Details -->
-        <div class="col-md-8">
-            <div class="movie-header mb-4">
-                <h1 class="display-4">{{ movie.title }} <small class="text-muted">({{ movie.release_year }})</small></h1>
+        <!-- Movie Details Column -->
+        <div class="col-12 col-md-8">
+            <!-- Movie Header -->
+            <header class="mb-4">
+                <h1 class="display-4 fw-bold text-white mb-2">{{ movie.title }} 
+                    {% if movie.release_year %}
+                        <small class="text-muted">({{ movie.release_year }})</small>
+                    {% endif %}
+                </h1>
                 
-                <!-- Rating and Certification -->
-                <div class="d-flex align-items-center mb-3">
+                <!-- Rating and Metadata -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
                     {% if movie.rating %}
-                    <div class="me-3">
-                        <span class="badge bg-warning text-dark p-2 fs-6">
-                            <i class="bi bi-star-fill"></i> {{ "%.1f"|format(movie.rating) }}/10
-                        </span>
+                    <div class="d-flex align-items-center bg-dark bg-opacity-75 px-3 py-1 rounded-pill">
+                        <i class="bi bi-star-fill text-warning me-1"></i>
+                        <span class="fw-bold">{{ "%.1f"|format(movie.rating) }}/10</span>
                     </div>
                     {% endif %}
                     
                     {% if movie.certification %}
-                    <span class="border px-2 py-1 rounded me-3">{{ movie.certification }}</span>
+                    <span class="border border-secondary text-white-50 px-2 py-1 rounded">{{ movie.certification }}</span>
                     {% endif %}
                     
                     {% if movie.runtime_minutes %}
                     <span class="text-muted">
-                        <i class="bi bi-clock"></i> 
-                        {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m
+                        <i class="bi bi-clock"></i> {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m
                     </span>
                     {% endif %}
                 </div>
 
                 <!-- Genres -->
                 {% if movie.genres %}
-                <div class="mb-3">
+                <div class="mb-4">
                     {% for genre in movie.genres %}
                         <a href="{{ url_for('pages.genre_movies', genre_id=genre.id) }}" 
                            class="btn btn-sm btn-outline-secondary me-1 mb-1">
@@ -64,48 +65,69 @@
                     {% endfor %}
                 </div>
                 {% endif %}
-            </div>
+            </header>
 
-            <!-- Overview -->
-            <div class="card mb-4 border-0 bg-light">
-                <div class="card-body">
-                    <h5 class="card-title">Overview</h5>
-                    <p class="card-text">{{ movie.overview or 'No overview available.' }}</p>
+            <!-- Overview Section -->
+            <section class="mb-5">
+                <div class="card border-secondary bg-dark bg-opacity-50">
+                    <div class="card-body p-4">
+                        <h2 class="h4 text-white mb-3">Overview</h2>
+                        <p class="card-text text-white-50 mb-0">
+                            {{ movie.overview or 'No overview available.' }}
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Additional Details -->
-            <div class="row">
+            <!-- Details and Stats -->
+            <div class="row g-4 mb-5">
                 <div class="col-md-6">
-                    <div class="card mb-3 border-0 bg-light">
+                    <div class="card h-100 border-secondary bg-dark bg-opacity-50">
                         <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Details</h6>
-                            <ul class="list-unstyled">
+                            <h3 class="h5 text-white mb-3">Details</h3>
+                            <ul class="list-unstyled text-white-50">
                                 {% if movie.release_year %}
-                                <li><strong>Release Year:</strong> {{ movie.release_year }}</li>
+                                <li class="mb-2">
+                                    <span class="fw-bold text-white">Release Year:</span> {{ movie.release_year }}
+                                </li>
                                 {% endif %}
                                 {% if movie.runtime_minutes %}
-                                <li><strong>Runtime:</strong> {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</li>
+                                <li class="mb-2">
+                                    <span class="fw-bold text-white">Runtime:</span> 
+                                    {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m
+                                </li>
                                 {% endif %}
                                 {% if movie.certification %}
-                                <li><strong>Rating:</strong> {{ movie.certification }}</li>
+                                <li class="mb-2">
+                                    <span class="fw-bold text-white">Rating:</span> {{ movie.certification }}
+                                </li>
                                 {% endif %}
                             </ul>
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-md-6">
-                    <div class="card border-0 bg-light">
+                    <div class="card h-100 border-secondary bg-dark bg-opacity-50">
                         <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Statistics</h6>
+                            <h3 class="h5 text-white mb-3">Statistics</h3>
                             {% if movie.stats %}
-                            <ul class="list-unstyled">
-                                <li><strong>Ratings:</strong> {{ "{:,}".format(movie.stats.ratings_count or 0) }}</li>
-                                <li><strong>Reviews:</strong> {{ "{:,}".format(movie.stats.reviews_count or 0) }}</li>
-                                <li><strong>Watchlist:</strong> {{ "{:,}".format(movie.stats.watchlist_count or 0) }}</li>
+                            <ul class="list-unstyled text-white-50">
+                                <li class="mb-2">
+                                    <span class="fw-bold text-white">Ratings:</span> 
+                                    {{ "{:,}".format(movie.stats.ratings_count or 0) }}
+                                </li>
+                                <li class="mb-2">
+                                    <span class="fw-bold text-white">Reviews:</span> 
+                                    {{ "{:,}".format(movie.stats.reviews_count or 0) }}
+                                </li>
+                                <li>
+                                    <span class="fw-bold text-white">Watchlist:</span> 
+                                    {{ "{:,}".format(movie.stats.watchlist_count or 0) }}
+                                </li>
                             </ul>
                             {% else %}
-                            <p class="text-muted">No statistics available.</p>
+                            <p class="text-muted mb-0">No statistics available.</p>
                             {% endif %}
                         </div>
                     </div>
@@ -114,22 +136,28 @@
 
             <!-- Similar Movies -->
             {% if similar_movies %}
-            <div class="mt-5">
-                <h4 class="mb-3">You May Also Like</h4>
-                <div class="row">
+            <section class="mb-5">
+                <h2 class="h4 text-white mb-4">You May Also Like</h2>
+                <div class="row g-3">
                     {% for similar in similar_movies %}
-                    <div class="col-6 col-md-3 mb-3">
+                    <div class="col-6 col-sm-4 col-md-6 col-lg-4 col-xl-3">
                         <a href="{{ url_for('pages.movie_detail', movie_id=similar.id) }}" class="text-decoration-none">
-                            <div class="card h-100">
+                            <div class="card h-100 bg-dark border-secondary hover-lift">
                                 {% if similar.poster_url %}
-                                <img src="{{ similar.poster_url }}" class="card-img-top" alt="{{ similar.title }}">
+                                <img src="{{ similar.poster_url }}" 
+                                     class="card-img-top" 
+                                     alt="{{ similar.title }}"
+                                     style="height: 300px; object-fit: cover;">
                                 {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <div class="bg-dark d-flex align-items-center justify-content-center" 
+                                     style="height: 300px;">
                                     <span class="text-muted">No image</span>
                                 </div>
                                 {% endif %}
                                 <div class="card-body">
-                                    <h6 class="card-title text-truncate" title="{{ similar.title }}">{{ similar.title }}</h6>
+                                    <h3 class="h6 text-white mb-1 text-truncate" title="{{ similar.title }}">
+                                        {{ similar.title }}
+                                    </h3>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <small class="text-muted">{{ similar.release_year }}</small>
                                         {% if similar.rating %}
@@ -144,18 +172,54 @@
                     </div>
                     {% endfor %}
                 </div>
-            </div>
+            </section>
             {% endif %}
 
             <!-- Back Button -->
-            <div class="mt-4">
-                <a href="{{ url_for('pages.home') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Back to Home
+            <div class="d-flex justify-content-center justify-content-md-start mt-5">
+                <a href="{{ url_for('pages.home') }}" class="btn btn-outline-light px-4">
+                    <i class="bi bi-arrow-left me-2"></i> Back to Home
                 </a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Custom hover effect for cards */
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Ensure proper spacing for the content below fixed header */
+    @media (min-width: 992px) {
+        .container {
+            padding-top: 2rem;
+        }
+    }
+    
+    /* Improve readability of text */
+    .text-white-50 {
+        opacity: 0.85;
+        line-height: 1.7;
+    }
+    
+    /* Style for the watchlist button */
+    #addToWatchlistBtn {
+        transition: all 0.3s ease;
+    }
+    
+    #addToWatchlistBtn:hover {
+        transform: translateY(-2px);
+    }
+</style>
 {% endblock %}
 
 {% block scripts %}
@@ -166,7 +230,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (watchlistBtn) {
         watchlistBtn.addEventListener('click', function() {
             // TODO: Implement AJAX call to add/remove from watchlist
-            alert('Watchlist functionality coming soon!');
+            const icon = this.querySelector('i');
+            const originalText = this.innerHTML;
+            
+            // Visual feedback
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Adding...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // This is just for demo - replace with actual API call
+                this.innerHTML = '<i class="bi bi-check-circle me-2"></i> Added to Watchlist';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-primary');
+                }, 2000);
+            }, 800);
         });
     }
 });
