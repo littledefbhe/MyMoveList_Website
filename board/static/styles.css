@@ -16,6 +16,37 @@
     --rank-color: #f5c518; /* IMDB yellow */
 }
 
+/* Moved styles from index.html inline <style> block for movie cards so all pages share same style */
+
+.genre-section {
+    margin-bottom: 3rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+.view-all {
+    color: #01b4e4;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.view-all:hover {
+    color: #90cea1;
+    text-decoration: underline;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -463,20 +494,27 @@ body {
 .movie-poster-container {
     position: relative;
     width: 100%;
-    padding-top: 150%;
+    max-height: 270px;
+    aspect-ratio: 2 / 3;
     overflow: hidden;
     background: #1a1a1a;
     border-radius: 8px 8px 0 0;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 .movie-poster {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    max-height: 100%;
+    margin: auto;
+    object-fit: contain;
     transition: transform 0.3s ease;
 }
 
@@ -539,39 +577,40 @@ body {
 }
 
 .movie-info {
-    padding: 15px;
+    padding: 16px 14px 24px 14px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     background: var(--card-bg);
+    max-height: none; /* Remove height constraint to allow full text display */
+    overflow: visible;
 }
 
 .movie-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 10px;
+    font-size: 8px;
+    font-weight: 400;
+    margin: 0 0 6px;
     color: var(--text-color);
-    line-height: 1.3;
+    line-height: 1.2;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-clamp: 2;
-    max-height: 2.6em;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    max-height: 4.2em;
 }
 
 .movie-meta {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     color: var(--text-light);
-    font-size: 13px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
+    font-size: 11px;
+    margin-bottom: 12px;
+    flex-wrap: nowrap;
     align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .movie-meta span {
@@ -589,7 +628,7 @@ body {
     padding: 1px 6px;
     border-radius: 3px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .movie-meta .runtime {
@@ -600,36 +639,40 @@ body {
 .movie-actions {
     margin-top: auto;
     display: flex;
-    gap: 8px;
+    gap: 12px;
     padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.movie-card {
+    max-height: 450px;
 }
 
 .btn-watchlist,
 .btn-rate {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: var(--text-light);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
 }
 
 .btn-watchlist:hover,
 .btn-rate:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
     color: var(--accent-color);
-    transform: scale(1.1);
+    transform: scale(1.2);
 }
 
 .btn-watchlist i,
 .btn-rate i {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 @media (max-width: 1200px) {
@@ -666,6 +709,11 @@ body {
     padding: 0 20px;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+/* Improve text color contrast */
+.movie-info, .movie-title, .movie-meta {
+    color: #FFFFFF;
 }
 
 .movie-container {
@@ -972,11 +1020,12 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+/*
 .movie-title {
     font-size: 18px;
     font-weight: 700;
     margin: 0 0 10px;
-    color: white;
+    color: var(--text-color);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -988,6 +1037,21 @@ body {
     letter-spacing: 0.3px;
     transition: all 0.3s ease;
 }
+*/
+
+.movie-title {
+    font-size: 8px !important;
+    font-weight: 400 !important;
+    margin: 0 0 3px !important;
+    color: var(--text-color) !important;
+    line-height: 1.0 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-height: 2.4em !important;
+}
 
 .movie-card:hover .movie-title {
     color: var(--accent-color);
@@ -998,7 +1062,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-    font-size: 14px;
+    font-size: 13px;
+    color: var(--text-light);
 }
 
 /* IMDB Ranking Badge */
@@ -1207,10 +1272,12 @@ body {
         height: 200px;
     }
     
+    /*
     .movie-title {
         font-size: 14px;
         height: 42px;
     }
+    */
     
     .movie-description {
         font-size: 12px;
