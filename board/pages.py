@@ -15,25 +15,19 @@ def home():
     # Get all genres that have movies
     genres = Genre.query.join(Genre.movies).group_by(Genre.id).order_by(Genre.name).all()
     
-    # Get movies by genre
+    # Create a dictionary to hold movies by genre
     movies_by_genre = {}
+    
+    # For each genre, get top 5 movies
     for genre in genres:
-        # Get up to 10 movies per genre, ordered by rating (highest first)
         movies = Movie.query\
             .join(Movie.genres)\
             .filter(Genre.id == genre.id)\
+            .options(joinedload(Movie.stats))\
             .order_by(Movie.rating.desc())\
-            .limit(10)\
+            .limit(5)\
             .all()
             
-        # Add watchlist status for each movie if user is logged in
-        if current_user.is_authenticated:
-            for movie in movies:
-                movie.in_watchlist = current_user.is_in_watchlist(movie)
-        else:
-            for movie in movies:
-                movie.in_watchlist = False
-                
         if movies:  # Only add genres that have movies
             movies_by_genre[genre] = movies
     
@@ -66,23 +60,15 @@ def search():
     if not query:
         return redirect(url_for('pages.home'))
     
-    # Search for movies where title contains the query (case-insensitive)
+    # Search for movies where the title contains the search query
     movies = Movie.query.filter(
         Movie.title.ilike(f'%{query}%')
     ).order_by(Movie.rating.desc()).all()
     
-    # Add watchlist status for each movie if user is logged in
-    if current_user.is_authenticated:
-        for movie in movies:
-            movie.in_watchlist = current_user.is_in_watchlist(movie)
-    else:
-        for movie in movies:
-            movie.in_watchlist = False
-    
     return render_template(
-        'search_results.html', 
-        movies=movies, 
+        'search_results.html',
         query=query,
+        movies=movies,
         title=f'Search: {query}'
     )
 

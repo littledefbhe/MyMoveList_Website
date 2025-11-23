@@ -1,15 +1,11 @@
 // Watchlist functionality
-async function toggleWatchlist(button) {
-    const movieId = button.getAttribute('data-movie-id');
-    const isInWatchlist = button.classList.contains('active');
-    
+async function toggleWatchlist(movieId) {
     try {
         const response = await fetch('/api/watchlist/toggle', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({ movie_id: movieId })
         });
@@ -21,35 +17,30 @@ async function toggleWatchlist(button) {
         const data = await response.json();
         
         // Update button state
-        if (data.in_watchlist) {
-            button.classList.add('active');
-            button.setAttribute('title', 'Remove from watchlist');
-            button.innerHTML = '<i class="bi bi-check-circle"></i>';
-        } else {
-            button.classList.remove('active');
-            button.setAttribute('title', 'Add to watchlist');
-            button.innerHTML = '<i class="bi bi-plus-circle"></i>';
+        const buttons = document.querySelectorAll(`.btn-watchlist[data-movie-id="${movieId}"]`);
+        buttons.forEach(button => {
+            if (data.status === 'added to') {
+                button.classList.add('active');
+                button.innerHTML = '<i class="bi bi-check-circle"></i>';
+                button.title = 'Remove from watchlist';
+            } else {
+                button.classList.remove('active');
+                button.innerHTML = '<i class="bi bi-plus-circle"></i>';
+                button.title = 'Add to watchlist';
+            }
+        });
+        
+        // If on the library page and movie was removed, remove the movie card
+        if (document.body.classList.contains('library-page') && data.status === 'removed from') {
+            const movieCards = document.querySelectorAll(`.movie-card[data-movie-id="${movieId}"]`);
+            movieCards.forEach(card => card.remove());
         }
+        
+        return true;
     } catch (error) {
         console.error('Error updating watchlist:', error);
-        alert('Failed to update watchlist. Please try again.');
+        return false;
     }
-}
-
-// Helper function to get CSRF token from cookies
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
 }
 
 // Initialize event listeners when DOM is loaded
@@ -59,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleWatchlist(button);
+            const movieId = button.getAttribute('data-movie-id');
+            toggleWatchlist(movieId);
         });
     });
 });
