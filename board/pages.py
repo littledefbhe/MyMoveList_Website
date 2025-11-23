@@ -80,10 +80,50 @@ def movie_detail(movie_id):
         joinedload(Movie.stats)
     ).get_or_404(movie_id)
     
+    # Get similar movies (movies that share at least one genre, excluding the current movie)
+    similar_movies = []
+    if movie.genres:
+        # Get the first 3 genre IDs for this movie
+        genre_ids = [genre.id for genre in movie.genres][:3]
+        
+        # Find other movies that share these genres
+        similar_movies = Movie.query\
+            .join(Movie.genres)\
+            .filter(
+                Movie.id != movie_id,
+                Genre.id.in_(genre_ids)
+            )\
+            .options(joinedload(Movie.stats))\
+            .distinct()\
+            .order_by(Movie.rating.desc())\
+            .limit(4)\
+            .all()
+    
+    # If we don't have enough similar movies, get some random popular movies
+    if len(similar_movies) < 4:
+        # Get additional random popular movies to fill the gap
+        additional_count = 4 - len(similar_movies)
+        additional_movies = Movie.query\
+            .options(joinedload(Movie.stats))\
+            .filter(Movie.id != movie_id)\
+            .order_by(db.func.random())\
+            .limit(additional_count)\
+            .all()
+        
+        # Add to similar movies, avoiding duplicates
+        existing_ids = {m.id for m in similar_movies}
+        for m in additional_movies:
+            if m.id not in existing_ids:
+                similar_movies.append(m)
+                existing_ids.add(m.id)
+                if len(similar_movies) >= 4:
+                    break
+    
     return render_template(
         'movie_detail.html',
         movie=movie,
-        title=movie.title
+        similar_movies=similar_movies,
+        title=f"{movie.title} ({movie.release_year})" if movie.release_year else movie.title
     )
 
 @bp.route('/signin', methods=['GET', 'POST'])

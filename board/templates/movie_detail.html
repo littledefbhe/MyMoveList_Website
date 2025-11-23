@@ -1,45 +1,153 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ movie.title }} ({{ movie.release_year }}) - MyMovieList{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="row">
+        <!-- Movie Poster -->
         <div class="col-md-4">
-            {% if movie.poster_url %}
-                <img src="{{ movie.poster_url }}" class="img-fluid rounded" alt="{{ movie.title }}">
-            {% else %}
-                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 450px; width: 300px;">
-                    <span class="text-muted">No image available</span>
-                </div>
+            <div class="movie-poster-container mb-4">
+                {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+                {% else %}
+                    <div class="bg-dark text-white d-flex align-items-center justify-content-center rounded" 
+                         style="height: 450px; width: 100%;">
+                        <span class="text-muted">No poster available</span>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Watchlist Button (for logged-in users) -->
+            {% if current_user.is_authenticated %}
+                <button class="btn btn-primary w-100 mb-3" id="addToWatchlistBtn">
+                    <i class="bi bi-plus-circle"></i> Add to Watchlist
+                </button>
             {% endif %}
         </div>
+
+        <!-- Movie Details -->
         <div class="col-md-8">
-            <h1>{{ movie.title }} <small class="text-muted">({{ movie.release_year }})</small></h1>
-            
-            {% if movie.rating %}
-            <div class="mb-3">
-                <span class="badge bg-warning text-dark">
-                    {{ "%.1f"|format(movie.rating) }} <i class="bi bi-star-fill"></i>
-                </span>
+            <div class="movie-header mb-4">
+                <h1 class="display-4">{{ movie.title }} <small class="text-muted">({{ movie.release_year }})</small></h1>
+                
+                <!-- Rating and Certification -->
+                <div class="d-flex align-items-center mb-3">
+                    {% if movie.rating %}
+                    <div class="me-3">
+                        <span class="badge bg-warning text-dark p-2 fs-6">
+                            <i class="bi bi-star-fill"></i> {{ "%.1f"|format(movie.rating) }}/10
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if movie.certification %}
+                    <span class="border px-2 py-1 rounded me-3">{{ movie.certification }}</span>
+                    {% endif %}
+                    
+                    {% if movie.runtime_minutes %}
+                    <span class="text-muted">
+                        <i class="bi bi-clock"></i> 
+                        {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Genres -->
+                {% if movie.genres %}
+                <div class="mb-3">
+                    {% for genre in movie.genres %}
+                        <a href="{{ url_for('pages.genre_movies', genre_id=genre.id) }}" 
+                           class="btn btn-sm btn-outline-secondary me-1 mb-1">
+                            {{ genre.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-            
-            {% if movie.runtime_minutes %}
-            <p><strong>Runtime:</strong> {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</p>
-            {% endif %}
-            
-            {% if movie.certification %}
-            <p><strong>Rating:</strong> {{ movie.certification }}</p>
-            {% endif %}
-            
-            {% if movie.overview %}
-            <div class="card mt-3">
+
+            <!-- Overview -->
+            <div class="card mb-4 border-0 bg-light">
                 <div class="card-body">
                     <h5 class="card-title">Overview</h5>
-                    <p class="card-text">{{ movie.overview }}</p>
+                    <p class="card-text">{{ movie.overview or 'No overview available.' }}</p>
+                </div>
+            </div>
+
+            <!-- Additional Details -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3 border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Details</h6>
+                            <ul class="list-unstyled">
+                                {% if movie.release_year %}
+                                <li><strong>Release Year:</strong> {{ movie.release_year }}</li>
+                                {% endif %}
+                                {% if movie.runtime_minutes %}
+                                <li><strong>Runtime:</strong> {{ movie.runtime_minutes // 60 }}h {{ movie.runtime_minutes % 60 }}m</li>
+                                {% endif %}
+                                {% if movie.certification %}
+                                <li><strong>Rating:</strong> {{ movie.certification }}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Statistics</h6>
+                            {% if movie.stats %}
+                            <ul class="list-unstyled">
+                                <li><strong>Ratings:</strong> {{ "{:,}".format(movie.stats.ratings_count or 0) }}</li>
+                                <li><strong>Reviews:</strong> {{ "{:,}".format(movie.stats.reviews_count or 0) }}</li>
+                                <li><strong>Watchlist:</strong> {{ "{:,}".format(movie.stats.watchlist_count or 0) }}</li>
+                            </ul>
+                            {% else %}
+                            <p class="text-muted">No statistics available.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Similar Movies -->
+            {% if similar_movies %}
+            <div class="mt-5">
+                <h4 class="mb-3">You May Also Like</h4>
+                <div class="row">
+                    {% for similar in similar_movies %}
+                    <div class="col-6 col-md-3 mb-3">
+                        <a href="{{ url_for('pages.movie_detail', movie_id=similar.id) }}" class="text-decoration-none">
+                            <div class="card h-100">
+                                {% if similar.poster_url %}
+                                <img src="{{ similar.poster_url }}" class="card-img-top" alt="{{ similar.title }}">
+                                {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <span class="text-muted">No image</span>
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title text-truncate" title="{{ similar.title }}">{{ similar.title }}</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ similar.release_year }}</small>
+                                        {% if similar.rating %}
+                                        <small class="text-warning">
+                                            <i class="bi bi-star-fill"></i> {{ "%.1f"|format(similar.rating) }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
             {% endif %}
-            
+
+            <!-- Back Button -->
             <div class="mt-4">
                 <a href="{{ url_for('pages.home') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Back to Home
@@ -48,4 +156,19 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Watchlist functionality
+    const watchlistBtn = document.getElementById('addToWatchlistBtn');
+    if (watchlistBtn) {
+        watchlistBtn.addEventListener('click', function() {
+            // TODO: Implement AJAX call to add/remove from watchlist
+            alert('Watchlist functionality coming soon!');
+        });
+    }
+});
+</script>
 {% endblock %}
