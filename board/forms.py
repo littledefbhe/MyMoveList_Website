@@ -12,9 +12,22 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    def validate_password_complexity(form, field):
+        password = field.data
+        if len(password) < 8:
+            raise ValidationError('Password must be at least 8 characters long')
+        if not any(c.isupper() for c in password):
+            raise ValidationError('Password must contain at least one uppercase letter')
+        if not any(c.islower() for c in password):
+            raise ValidationError('Password must contain at least one lowercase letter')
+        if not any(c.isdigit() for c in password):
+            raise ValidationError('Password must contain at least one number')
+        if not any(not c.isalnum() for c in password):
+            raise ValidationError('Password must contain at least one special character')
+
     password = PasswordField('Password', validators=[
         DataRequired(),
-        Length(min=8, message='Password must be at least 8 characters long')
+        validate_password_complexity
     ])
     confirm_password = PasswordField('Confirm Password', validators=[
         DataRequired(),
