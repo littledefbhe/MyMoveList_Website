@@ -39,8 +39,8 @@
                         {% endif %}
                     </div>
                     <div class="movie-actions">
-                        <button class="btn-watchlist" title="Add to watchlist">
-                            <i class="bi bi-plus-circle"></i>
+                        <button class="btn-watchlist" data-movie-id="{{ movie.id }}" title="{% if movie in current_user.watchlist %}Remove from watchlist{% else %}Add to watchlist{% endif %}">
+                            <i class="bi {% if movie in current_user.watchlist %}bi-check-circle{% else %}bi-plus-circle{% endif %}"></i>
                         </button>
                         <button class="btn-rate" title="Rate this movie">
                             <i class="bi bi-star"></i>
