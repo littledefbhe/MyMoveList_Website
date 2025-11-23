@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}My Library - MyMovieList{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-header">
+        <h2 class="section-title">My Library</h2>
+        <p class="text-muted">{{ total_movies }} movie{% if total_movies != 1 %}s{% endif %} in your library</p>
+    </div>
+    
+    {% if not movies_by_letter %}
+        <div class="text-center py-5">
+            <i class="bi bi-collection" style="font-size: 3rem; color: var(--text-muted);"></i>
+            <p class="mt-3">Your library is empty</p>
+            <p class="text-muted">Add movies to your watchlist to see them here</p>
+            <a href="{{ url_for('pages.home') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-house-door"></i> Browse Movies
+            </a>
+        </div>
+    {% else %}
+        {% for letter, movies in movies_by_letter.items() %}
+        <div class="mb-4">
+            <h3 class="letter-header">{{ letter }}</h3>
+            <div class="movie-grid">
+                {% for movie in movies %}
+                <div class="movie-card">
+                    <a href="{{ url_for('pages.movie_detail', movie_id=movie.id) }}" class="movie-poster-container">
+                        {% if movie.poster_url %}
+                            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+                        {% else %}
+                            <div class="no-poster">
+                                <i class="bi bi-film"></i>
+                                <span>No poster available</span>
+                            </div>
+                        {% endif %}
+                        <div class="movie-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <span>{{ "%.1f"|format(movie.rating) if movie.rating else 'N/A' }}</span>
+                        </div>
+                    </a>
+                    <div class="movie-info">
+                        <h3 class="movie-title">{{ movie.title }}</h3>
+                        <div class="movie-meta">
+                            <span class="release-year">{{ movie.release_year }}</span>
+                            {% if movie.certification %}
+                                <span class="certification">{{ movie.certification }}</span>
+                            {% endif %}
+                            {% if movie.runtime_minutes %}
+                                <span class="runtime">{{ movie.runtime_minutes }} min</span>
+                            {% endif %}
+                        </div>
+                        <div class="movie-actions">
+                            <form action="{{ url_for('pages.movie_detail', movie_id=movie.id) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn-watchlist active" title="Remove from library">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>In Library</span>
+                                </button>
+                            </form>
+                            <button class="btn-rate" title="Rate this movie">
+                                <i class="bi bi-star"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+.letter-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.btn-watchlist.active {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.btn-watchlist.active i {
+    color: white;
+}
+
+.btn-watchlist.active:hover {
+    background-color: var(--success-hover);
+}
+
+.movie-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+</style>
+{% endblock %}

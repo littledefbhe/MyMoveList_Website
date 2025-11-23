@@ -172,14 +172,43 @@ def signout():
 
 @bp.route('/top-movies')
 def top_movies():
-    # Get all movies with their stats, ordered by rating (highest first)
-    movies = Movie.query\
-        .options(joinedload(Movie.stats), joinedload(Movie.genres))\
+    # Get top 50 movies by rating, ordered highest to lowest
+    top_movies = Movie.query\
+        .options(joinedload(Movie.stats))\
+        .filter(Movie.rating.isnot(None))\
         .order_by(Movie.rating.desc())\
+        .limit(50)\
         .all()
     
     return render_template(
         'top_movies.html',
-        movies=movies,
+        movies=top_movies,
         title='Top Movies by IMDB Rating'
+    )
+
+@bp.route('/my-library')
+@login_required
+def my_library():
+    # Get all movies in the user's watchlist
+    watchlist_movies = current_user.watchlist\
+        .options(joinedload(Movie.stats))\
+        .order_by(Movie.title)\
+        .all()
+    
+    # Group movies by first letter for better organization
+    movies_by_letter = {}
+    for movie in watchlist_movies:
+        first_letter = movie.title[0].upper() if movie.title else '#'
+        if first_letter not in movies_by_letter:
+            movies_by_letter[first_letter] = []
+        movies_by_letter[first_letter].append(movie)
+    
+    # Sort the dictionary by letter
+    movies_by_letter = dict(sorted(movies_by_letter.items()))
+    
+    return render_template(
+        'library.html',
+        movies_by_letter=movies_by_letter,
+        title='My Library',
+        total_movies=len(watchlist_movies)
     )
