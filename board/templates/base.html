@@ -47,8 +47,8 @@
         <nav class="main-nav">
             <div class="container">
                 <ul class="nav-links">
-                    <li class="active"><a href="{{ url_for('pages.home') }}">Home</a></li>
-                    <li><a href="#">Top Movies</a></li>
+                    <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}"><a href="{{ url_for('pages.home') }}">Home</a></li>
+                    <li class="{% if request.endpoint == 'pages.top_movies' %}active{% endif %}"><a href="{{ url_for('pages.top_movies') }}">Top Movies</a></li>
                     <li><a href="#">My Library</a></li>
                     <li><a href="#">Trending</a></li>
                 </ul>

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Top Movies by IMDB Rating - MyMovieList{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="genre-section">
+        <div class="section-header">
+            <h2 class="section-title">Top Movies by IMDB Rating</h2>
+        </div>
+        
+        <div class="movie-grid">
+            {% for movie in movies %}
+            <div class="movie-card">
+                <div class="movie-poster-container">
+                    <span class="rank-badge">#{{ loop.index }}</span>
+                    {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+                    {% else %}
+                        <div class="no-poster">
+                            <i class="bi bi-film"></i>
+                            <span>No poster available</span>
+                        </div>
+                    {% endif %}
+                    <div class="movie-rating">
+                        <i class="bi bi-star-fill"></i>
+                        <span>{{ "%.1f"|format(movie.rating) if movie.rating else 'N/A' }}</span>
+                    </div>
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">{{ movie.title }}</h3>
+                    <div class="movie-meta">
+                        <span class="release-year">{{ movie.release_year }}</span>
+                        {% if movie.certification %}
+                            <span class="certification">{{ movie.certification }}</span>
+                        {% endif %}
+                        {% if movie.runtime_minutes %}
+                            <span class="runtime">{{ movie.runtime_minutes }} min</span>
+                        {% endif %}
+                    </div>
+                    <div class="movie-actions">
+                        <button class="btn-watchlist" title="Add to watchlist">
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                        <button class="btn-rate" title="Rate this movie">
+                            <i class="bi bi-star"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<style>
+.rank-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffc107;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 2;
+    font-size: 0.9rem;
+}
+
+.movie-poster-container {
+    position: relative;
+}
+
+.no-poster {
+    height: 375px;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.no-poster i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+</style>
+{% endblock %}

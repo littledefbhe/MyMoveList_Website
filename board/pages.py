@@ -82,3 +82,17 @@ def movie_detail(movie_id):
         movie=movie,
         title=movie.title
     )
+
+@bp.route('/top-movies')
+def top_movies():
+    # Get all movies with their stats, ordered by rating (highest first)
+    movies = Movie.query\
+        .options(joinedload(Movie.stats), joinedload(Movie.genres))\
+        .order_by(Movie.rating.desc())\
+        .all()
+    
+    return render_template(
+        'top_movies.html',
+        movies=movies,
+        title='Top Movies by IMDB Rating'
+    )
