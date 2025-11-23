@@ -24,6 +24,11 @@
                 <div class="movie-poster-container">
                     {% if movie.poster_url %}
                         <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+                        {% if "lord of the rings" in movie.title|lower %}
+                        <div style="color: red; font-size: 10px; margin-top: 4px; word-wrap: break-word;">
+                            DEBUG poster_url: {{ movie.poster_url }}
+                        </div>
+                        {% endif %}
                     {% else %}
                         <div class="no-poster">
                             <i class="bi bi-film"></i>
