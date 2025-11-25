@@ -1,5 +1,11 @@
 // Helper function to show notification
 function showNotification(message, type = 'success') {
+    // Remove any existing notifications first
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => {
+        notification.remove();
+    });
+
     const notification = document.createElement('div');
     notification.className = `notification ${type} show`;
     notification.textContent = message;
