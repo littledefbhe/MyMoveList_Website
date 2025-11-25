@@ -17,12 +17,6 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="watchlist-tab" data-bs-toggle="tab" data-bs-target="#watchlist" type="button" role="tab" data-category="watchlist">
-                        Watchlist
-                        <span class="badge bg-secondary ms-1">{{ watchlist_count|default(0) }}</span>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="watched-tab" data-bs-toggle="tab" data-bs-target="#watched" type="button" role="tab" data-category="watched">
                         Watched
                         <span class="badge bg-secondary ms-1">{{ watched_count|default(0) }}</span>
@@ -80,13 +74,24 @@
                         {% endif %}
                     </div>
                     <div class="movie-actions">
-                        <button class="btn-watchlist active" onclick="toggleWatchlist({{ movie.id }})" title="Remove from library">
-                            <i class="bi bi-check-circle"></i>
-                            <span>In Library</span>
-                        </button>
-                        <button class="btn-rate" title="Rate this movie">
-                            <i class="bi bi-star"></i>
-                        </button>
+                        <div class="d-flex gap-2">
+                            <!-- Watchlist Button -->
+                            <button class="btn btn-sm btn-outline-light square-btn" title="Add to Watchlist">
+                                <i class="bi bi-bookmark-plus"></i>
+                            </button>
+                            
+                            <!-- Favorites Button -->
+                            <button class="btn btn-sm btn-outline-light square-btn" title="Add to Favorites">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                            
+                            <!-- Remove Button -->
+                            <button class="btn btn-sm btn-outline-danger square-btn" 
+                                    onclick="toggleWatchlist({{ movie.id }}); event.stopPropagation();" 
+                                    title="Remove from library">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -96,6 +101,35 @@
 </div>
 
 <style>
+.square-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: all 0.2s;
+}
+.square-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+.btn-outline-danger {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+.btn-outline-danger:hover {
+    background: #ff6b6b;
+    color: #fff;
+}
+.movie-actions {
+    margin-top: 0.5rem;
+}
+
 .letter-header {
     font-size: 1.5rem;
     font-weight: 600;
