@@ -45,7 +45,6 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-bookmark"></i> Watchlist</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="{{ url_for('pages.signout') }}"><i class="bi bi-box-arrow-right"></i> Sign Out</a></li>
                         </ul>
@@ -66,7 +65,6 @@
                     {% if current_user.is_authenticated %}
                     <li class="{% if request.endpoint == 'pages.my_library' %}active{% endif %}"><a href="{{ url_for('pages.my_library') }}">My Library</a></li>
                     {% endif %}
-                    <li><a href="#">Trending</a></li>
                 </ul>
             </div>
         </nav>
