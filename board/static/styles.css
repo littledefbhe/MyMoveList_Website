@@ -17,14 +17,14 @@
 }
 
 /* Movie Detail Page Buttons */
-.movie-actions {
+.movie-detail-page .movie-actions {
     display: flex;
     gap: 12px;
     margin: 1.5rem 0;
     flex-wrap: wrap;
 }
 
-.movie-actions .btn {
+.movie-detail-page .movie-actions .btn {
     flex: 1 1 200px;
     display: flex;
     align-items: center;
@@ -38,21 +38,21 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.movie-actions .btn i {
+.movie-detail-page .movie-actions .btn i {
     margin-right: 8px;
     font-size: 1.1em;
 }
 
 /* Watchlist Button */
-.movie-actions .btn-outline-danger,
-.movie-actions .btn-primary {
+.movie-detail-page .movie-actions .btn-outline-danger,
+.movie-detail-page .movie-actions .btn-primary {
     border: 2px solid var(--accent-color);
     background-color: var(--accent-color);
     color: white;
 }
 
-.movie-actions .btn-outline-danger:hover,
-.movie-actions .btn-primary:hover {
+.movie-detail-page .movie-actions .btn-outline-danger:hover,
+.movie-detail-page .movie-actions .btn-primary:hover {
     background-color: var(--accent-hover);
     border-color: var(--accent-hover);
     transform: translateY(-2px);
@@ -60,8 +60,8 @@
 }
 
 /* Favorites Button */
-.movie-actions .btn-outline-light,
-.movie-actions .btn-danger {
+.movie-detail-page .movie-actions .btn-outline-light,
+.movie-detail-page .movie-actions .btn-danger {
     border: 2px solid #e50914;
     background-color: transparent;
     color: #e50914;
@@ -72,25 +72,25 @@
     color: white;
 }
 
-.movie-actions .btn-outline-light:hover {
+.movie-detail-page .movie-actions .btn-outline-light:hover {
     background-color: rgba(229, 9, 20, 0.1);
     color: #ff4d4d;
     border-color: #ff4d4d;
 }
 
-.movie-actions .btn-danger:hover {
+.movie-detail-page .movie-actions .btn-danger:hover {
     background-color: #ff0a16;
     border-color: #ff0a16;
 }
 
 /* Watched Button */
-.movie-actions .btn-outline-light:not(.btn-danger) {
+.movie-detail-page .movie-actions .btn-outline-light:not(.btn-danger) {
     border: 2px solid var(--accent-color);
     color: var(--accent-color);
     background-color: transparent;
 }
 
-.movie-actions .btn-outline-light:not(.btn-danger):hover {
+.movie-detail-page .movie-actions .btn-outline-light:not(.btn-danger):hover {
     background-color: var(--accent-transparent);
     color: var(--accent-hover);
     border-color: var(--accent-hover);
