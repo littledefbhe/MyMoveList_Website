@@ -183,7 +183,7 @@ async function toggleWatchlist(movieId) {
 // Favorites functionality
 async function toggleFavorite(movieId) {
     const { success, data } = await toggleMovieStatus(
-        'favorite',
+        'favorites',
         movieId,
         'Failed to update favorites'
     );

@@ -28,15 +28,15 @@
                     
                     <!-- Favorites Button -->
                     <button class="btn {% if current_user.is_favorite(movie) %}btn-danger{% else %}btn-outline-light{% endif %}"
-                            onclick="toggleFavorite({{ movie.id }});"
+                            onclick="toggleFavorite('{{ movie.id }}');"
                             title="{% if current_user.is_favorite(movie) %}Remove from favorites{% else %}Add to favorites{% endif %}">
                         <i class="bi {% if current_user.is_favorite(movie) %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
                         {% if current_user.is_favorite(movie) %}Favorited{% else %}Favorite{% endif %}
                     </button>
-                    
+
                     <!-- Watched Button -->
                     <button class="btn {% if current_user.has_watched(movie) %}btn-primary{% else %}btn-outline-light{% endif %}"
-                            onclick="toggleWatched({{ movie.id }});"
+                            onclick="toggleWatched('{{ movie.id }}');"
                             title="{% if current_user.has_watched(movie) %}Mark as not watched{% else %}Mark as watched{% endif %}">
                         <i class="bi {% if current_user.has_watched(movie) %}bi-eye-fill{% else %}bi-eye{% endif %}"></i>
                         {% if current_user.has_watched(movie) %}Watched{% else %}Mark as Watched{% endif %}
