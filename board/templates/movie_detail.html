@@ -18,12 +18,28 @@
             </div>
             
             {% if current_user.is_authenticated %}
-                <button class="btn {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %} w-100 mt-3 py-2 fw-bold" 
-                        id="watchlistBtn"
-                        data-movie-id="{{ movie.id }}">
-                    <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %} me-2"></i>
-                    {% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}
-                </button>
+                <div class="d-flex gap-2 mb-3">
+                    <!-- Watchlist Button -->
+                    <button class="btn btn-lg flex-fill {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %} py-2 fw-bold" 
+                            onclick="toggleWatchlist({{ movie.id }});">
+                        <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %} me-2"></i>
+                        {% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}
+                    </button>
+                    
+                    <!-- Favorites Button -->
+                    <button class="btn btn-lg flex-fill {% if movie in current_user.favorites %}btn-danger{% else %}btn-outline-light{% endif %} py-2"
+                            onclick="toggleFavorite({{ movie.id }});">
+                        <i class="bi {% if movie in current_user.favorites %}bi-heart-fill{% else %}bi-heart{% endif %} me-2"></i>
+                        {% if movie in current_user.favorites %}Favorited{% else %}Favorite{% endif %}
+                    </button>
+                    
+                    <!-- Watched Button -->
+                    <button class="btn btn-lg flex-fill {% if movie in current_user.watched_movies %}btn-primary{% else %}btn-outline-light{% endif %} py-2"
+                            onclick="toggleWatched({{ movie.id }});">
+                        <i class="bi {% if movie in current_user.watched_movies %}bi-eye-fill{% else %}bi-eye{% endif %} me-2"></i>
+                        {% if movie in current_user.watched_movies %}Watched{% else %}Mark as Watched{% endif %}
+                    </button>
+                </div>
             {% endif %}
         </div>
 

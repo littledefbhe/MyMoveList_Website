@@ -76,20 +76,24 @@
                     <div class="movie-actions">
                         <div class="d-flex gap-2">
                             <!-- Watchlist Button -->
-                            <button class="btn btn-sm btn-outline-light square-btn" title="Add to Watchlist">
-                                <i class="bi bi-bookmark-plus"></i>
+                            <button class="btn btn-sm btn-outline-light square-btn" 
+                                    onclick="toggleWatchlist('{{ movie.id }}'); event.stopPropagation();"
+                                    title="{{ 'Remove from watchlist' if movie in current_user.watchlist else 'Add to watchlist' }}">
+                                <i class="bi {{ 'bi-bookmark-check-fill' if movie in current_user.watchlist else 'bi-bookmark-plus' }}"></i>
                             </button>
                             
                             <!-- Favorites Button -->
-                            <button class="btn btn-sm btn-outline-light square-btn" title="Add to Favorites">
-                                <i class="bi bi-heart"></i>
+                            <button class="btn btn-sm {{ 'btn-danger' if movie in current_user.favorites else 'btn-outline-light' }} square-btn" 
+                                    onclick="toggleFavorite('{{ movie.id }}'); event.stopPropagation();"
+                                    title="{{ 'Remove from favorites' if movie in current_user.favorites else 'Add to favorites' }}">
+                                <i class="bi {{ 'bi-heart-fill' if movie in current_user.favorites else 'bi-heart' }}"></i>
                             </button>
                             
-                            <!-- Remove Button -->
-                            <button class="btn btn-sm btn-outline-danger square-btn" 
-                                    onclick="toggleWatchlist({{ movie.id }}); event.stopPropagation();" 
-                                    title="Remove from library">
-                                <i class="bi bi-trash"></i>
+                            <!-- Watched Button -->
+                            <button class="btn btn-sm {{ 'btn-primary' if movie in current_user.watched_movies else 'btn-outline-light' }} square-btn" 
+                                    onclick="toggleWatched('{{ movie.id }}'); event.stopPropagation();"
+                                    title="{{ 'Mark as not watched' if movie in current_user.watched_movies else 'Mark as watched' }}">
+                                <i class="bi {{ 'bi-eye-fill' if movie in current_user.watched_movies else 'bi-eye' }}"></i>
                             </button>
                         </div>
                     </div>

@@ -1,7 +1,62 @@
-// Watchlist functionality
-async function toggleWatchlist(movieId) {
+// Helper function to show notification
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type} show`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Add notification styles if they don't exist
+if (!document.getElementById('notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: #28a745;
+        }
+        
+        .notification.error {
+            background-color: #dc3545;
+        }
+        
+        .fade-out {
+            opacity: 0 !important;
+            transform: translateY(20px) !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Generic function to toggle movie status
+async function toggleMovieStatus(endpoint, movieId, successMessage, errorMessage) {
     try {
-        const response = await fetch('/api/watchlist/toggle', {
+        const response = await fetch(`/api/${endpoint}/toggle`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -11,22 +66,47 @@ async function toggleWatchlist(movieId) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to update watchlist');
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
-        
-        // Update button state
-        const buttons = document.querySelectorAll(`.btn-watchlist[data-movie-id="${movieId}"]`);
+        return { success: true, data };
+    } catch (error) {
+        console.error(`${errorMessage}:`, error);
+        showNotification(errorMessage, 'error');
+        return { success: false, error };
+    }
+}
+
+// Watchlist functionality
+async function toggleWatchlist(movieId) {
+    const { success, data } = await toggleMovieStatus(
+        'watchlist',
+        movieId,
+        'Failed to update watchlist'
+    );
+
+    if (success) {
+        // Update all watchlist buttons for this movie
+        const buttons = document.querySelectorAll(`[onclick*="toggleWatchlist(${movieId})"]`);
         buttons.forEach(button => {
+            const icon = button.querySelector('i');
             if (data.status === 'added to') {
-                button.classList.add('active');
-                button.innerHTML = '<i class="bi bi-check-circle"></i>';
+                button.classList.remove('btn-outline-light', 'btn-primary');
+                button.classList.add('btn-outline-danger');
+                if (icon) icon.className = 'bi bi-bookmark-check-fill';
                 button.title = 'Remove from watchlist';
+                if (button.textContent.includes('Add to Watchlist')) {
+                    button.innerHTML = '<i class="bi bi-bookmark-check-fill me-2"></i>Remove from Watchlist';
+                }
             } else {
-                button.classList.remove('active');
-                button.innerHTML = '<i class="bi bi-plus-circle"></i>';
+                button.classList.remove('btn-outline-danger');
+                button.classList.add('btn-outline-light', 'btn-primary');
+                if (icon) icon.className = 'bi bi-bookmark-plus';
                 button.title = 'Add to watchlist';
+                if (button.textContent.includes('Remove from Watchlist')) {
+                    button.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add to Watchlist';
+                }
             }
         });
         
@@ -36,22 +116,126 @@ async function toggleWatchlist(movieId) {
             movieCards.forEach(card => card.remove());
         }
         
-        return true;
-    } catch (error) {
-        console.error('Error updating watchlist:', error);
-        return false;
+        showNotification(`Movie ${data.status} your watchlist`);
     }
+    
+    return success;
+}
+
+// Favorites functionality
+async function toggleFavorite(movieId) {
+    const { success, data } = await toggleMovieStatus(
+        'favorites',
+        movieId,
+        'Failed to update favorites'
+    );
+
+    if (success) {
+        // Update all favorite buttons for this movie
+        const buttons = document.querySelectorAll(`[onclick*="toggleFavorite(${movieId})"]`);
+        buttons.forEach(button => {
+            const icon = button.querySelector('i');
+            if (data.status === 'added to') {
+                button.classList.remove('btn-outline-light');
+                button.classList.add('btn-danger');
+                if (icon) icon.className = 'bi bi-heart-fill';
+                button.title = 'Remove from favorites';
+                if (button.textContent.includes('Favorite')) {
+                    button.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Favorited';
+                }
+            } else {
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-outline-light');
+                if (icon) icon.className = 'bi bi-heart';
+                button.title = 'Add to favorites';
+                if (button.textContent.includes('Favorited')) {
+                    button.innerHTML = '<i class="bi bi-heart me-2"></i>Favorite';
+                }
+            }
+        });
+        
+        showNotification(`Movie ${data.status} your favorites`);
+    }
+    
+    return success;
+}
+
+// Watched functionality
+async function toggleWatched(movieId) {
+    const { success, data } = await toggleMovieStatus(
+        'watched',
+        movieId,
+        'Failed to update watched status'
+    );
+
+    if (success) {
+        // Update all watched buttons for this movie
+        const buttons = document.querySelectorAll(`[onclick*="toggleWatched(${movieId})"]`);
+        buttons.forEach(button => {
+            const icon = button.querySelector('i');
+            if (data.status === 'marked as') {
+                button.classList.remove('btn-outline-light');
+                button.classList.add('btn-primary');
+                if (icon) icon.className = 'bi bi-eye-fill';
+                button.title = 'Mark as not watched';
+                if (button.textContent.includes('Mark as Watched')) {
+                    button.innerHTML = '<i class="bi bi-eye-fill me-2"></i>Watched';
+                }
+            } else {
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-outline-light');
+                if (icon) icon.className = 'bi bi-eye';
+                button.title = 'Mark as watched';
+                if (button.textContent.includes('Watched')) {
+                    button.innerHTML = '<i class="bi bi-eye me-2"></i>Mark as Watched';
+                }
+            }
+        });
+        
+        showNotification(`Movie ${data.status} watched`);
+    }
+    
+    return success;
 }
 
 // Initialize event listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Add click handlers to all watchlist buttons
-    document.querySelectorAll('.btn-watchlist').forEach(button => {
-        button.addEventListener('click', (e) => {
+    // Handle all button clicks using event delegation
+    document.addEventListener('click', (e) => {
+        // Watchlist buttons
+        let button = e.target.closest('[onclick^="toggleWatchlist"]');
+        if (button) {
             e.preventDefault();
             e.stopPropagation();
-            const movieId = button.getAttribute('data-movie-id');
-            toggleWatchlist(movieId);
-        });
+            const match = button.getAttribute('onclick').match(/toggleWatchlist\((\d+)\)/);
+            if (match && match[1]) {
+                toggleWatchlist(match[1]);
+            }
+            return;
+        }
+        
+        // Favorite buttons
+        button = e.target.closest('[onclick^="toggleFavorite"]');
+        if (button) {
+            e.preventDefault();
+            e.stopPropagation();
+            const match = button.getAttribute('onclick').match(/toggleFavorite\((\d+)\)/);
+            if (match && match[1]) {
+                toggleFavorite(match[1]);
+            }
+            return;
+        }
+        
+        // Watched buttons
+        button = e.target.closest('[onclick^="toggleWatched"]');
+        if (button) {
+            e.preventDefault();
+            e.stopPropagation();
+            const match = button.getAttribute('onclick').match(/toggleWatched\((\d+)\)/);
+            if (match && match[1]) {
+                toggleWatched(match[1]);
+            }
+            return;
+        }
     });
 });
