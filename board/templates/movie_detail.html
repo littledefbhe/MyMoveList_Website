@@ -20,8 +20,8 @@
             {% if current_user.is_authenticated %}
                 <div class="movie-actions">
                     <!-- Watchlist Button -->
-                    <button class="btn {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %}" 
-                            onclick="toggleWatchlist({{ movie.id }});">
+                    <button class="btn {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %}"
+                            onclick="toggleWatchlist('{{ movie.id }}');">
                         <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %}"></i>
                         {% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}
                     </button>
@@ -241,99 +241,4 @@
         transform: translateY(-2px);
     }
 </style>
-{% endblock %}
-
-{% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Watchlist functionality
-    const watchlistBtn = document.getElementById('watchlistBtn');
-    const watchlistCount = document.getElementById('watchlistCount');
-    
-    if (watchlistBtn) {
-        watchlistBtn.addEventListener('click', function() {
-            const movieId = this.getAttribute('data-movie-id');
-            const icon = this.querySelector('i');
-            const isInWatchlist = icon.classList.contains('bi-dash-circle');
-            const button = this;
-            
-            // Show loading state
-            button.disabled = true;
-            const originalHTML = button.innerHTML;
-            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
-            
-            // Make API call to toggle watchlist status
-            fetch('/api/watchlist/toggle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({ movie_id: parseInt(movieId) })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                // Update button state
-                if (data.status === 'added') {
-                    icon.classList.remove('bi-plus-circle');
-                    icon.classList.add('bi-dash-circle');
-                    button.classList.remove('btn-primary');
-                    button.classList.add('btn-outline-danger');
-                } else {
-                    icon.classList.remove('bi-dash-circle');
-                    icon.classList.add('bi-plus-circle');
-                    button.classList.remove('btn-outline-danger');
-                    button.classList.add('btn-primary');
-                }
-                
-                // Update button text
-                button.innerHTML = icon.outerHTML + ' ' + data.button_text;
-                
-                // Update watchlist count
-                if (watchlistCount) {
-                    if (data.watchlist_count > 0) {
-                        watchlistCount.textContent = `${data.watchlist_count} user${data.watchlist_count > 1 ? 's' : ''} have this in their watchlist`;
-                    } else {
-                        watchlistCount.textContent = 'Be the first to add this to watchlist';
-                    }
-                }
-                
-                // Show success feedback
-                const feedback = document.createElement('div');
-                feedback.className = 'alert alert-success mt-2 py-1';
-                feedback.role = 'alert';
-                feedback.textContent = `Movie ${data.status} your watchlist!`;
-                button.parentNode.insertBefore(feedback, button.nextSibling);
-                
-                // Remove feedback after 3 seconds
-                setTimeout(() => {
-                    feedback.remove();
-                }, 3000);
-            })
-            .catch(error => {
-                console.error('Error updating watchlist:', error);
-                // Show error feedback
-                const feedback = document.createElement('div');
-                feedback.className = 'alert alert-danger mt-2 py-1';
-                feedback.role = 'alert';
-                feedback.textContent = 'Error updating watchlist. Please try again.';
-                button.parentNode.insertBefore(feedback, button.nextSibling);
-                
-                // Remove feedback after 3 seconds
-                setTimeout(() => {
-                    feedback.remove();
-                }, 3000);
-            })
-            .finally(() => {
-                // Re-enable button
-                button.disabled = false;
-            });
-        });
-    }
-});
-</script>
 {% endblock %}
