@@ -152,6 +152,26 @@ async function toggleWatchlist(movieId) {
         if (document.body.classList.contains('library-page') && data.status === 'removed from') {
             const movieCards = document.querySelectorAll(`.movie-card[data-movie-id="${movieId}"]`);
             movieCards.forEach(card => card.remove());
+
+            // Check if there are no more movie cards left
+            const remainingCards = document.querySelectorAll('.movie-card');
+            if (remainingCards.length === 0) {
+                // Show empty state
+                const movieGrid = document.querySelector('.movie-grid');
+                if (movieGrid) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'text-center py-5 empty-state';
+                    emptyState.innerHTML = `
+                        <i class="bi bi-collection" style="font-size: 3rem; color: var(--text-muted);"></i>
+                        <p class="mt-3">Your library is empty</p>
+                        <p class="text-muted">Add movies to your watchlist to see them here</p>
+                        <a href="/" class="btn btn-primary mt-3">
+                            <i class="bi bi-house-door"></i> Browse Movies
+                        </a>
+                    `;
+                    movieGrid.parentNode.replaceChild(emptyState, movieGrid);
+                }
+            }
         }
         
         showNotification(`Movie ${data.status} your watchlist`);
