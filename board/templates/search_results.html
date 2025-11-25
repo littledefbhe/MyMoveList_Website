@@ -54,17 +54,17 @@
                         </button>
                         
                         <!-- Favorites Button -->
-                        <button class="btn btn-sm btn-outline-light square-btn" 
+                        <button class="btn btn-sm btn-outline-light square-btn"
                                 onclick="toggleFavorite('{{ movie.id }}'); event.stopPropagation();"
                                 title="{{ 'Remove from favorites' if movie in current_user.favorites else 'Add to favorites' }}">
-                            <i class="bi {{ 'bi-heart-fill text-danger' if movie in current_user.favorites else 'bi-heart' }}"></i>
+                            <i class="bi {{ 'bi-heart-fill' if movie in current_user.favorites else 'bi-heart' }}"></i>
                         </button>
-                        
+
                         <!-- Watched Button -->
-                        <button class="btn btn-sm btn-outline-light square-btn" 
+                        <button class="btn btn-sm btn-outline-light square-btn"
                                 onclick="toggleWatched('{{ movie.id }}'); event.stopPropagation();"
                                 title="{{ 'Mark as not watched' if movie in current_user.watched_movies else 'Mark as watched' }}">
-                            <i class="bi {{ 'bi-eye-fill text-primary' if movie in current_user.watched_movies else 'bi-eye' }}"></i>
+                            <i class="bi {{ 'bi-eye-fill' if movie in current_user.watched_movies else 'bi-eye' }}"></i>
                         </button>
                     </div>
                     {% endif %}

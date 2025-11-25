@@ -124,10 +124,19 @@ async function toggleWatchlist(movieId) {
         
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
+            // Remove all existing button classes
+            button.classList.forEach(cls => {
+                if (cls.startsWith('btn-')) {
+                    button.classList.remove(cls);
+                }
+            });
             if (data.status === 'added to') {
                 // For watchlist button - using btn-outline-light consistently
                 button.classList.add('btn-outline-light');
-                if (icon) icon.className = 'bi bi-bookmark-check-fill';
+                if (icon) {
+                    icon.classList.remove('bi-bookmark-plus');
+                    icon.classList.add('bi-bookmark-check-fill');
+                }
                 button.title = 'Remove from watchlist';
 
                 // For full text buttons
@@ -136,7 +145,10 @@ async function toggleWatchlist(movieId) {
                 }
             } else {
                 button.classList.add('btn-outline-light');
-                if (icon) icon.className = 'bi bi-bookmark-plus';
+                if (icon) {
+                    icon.classList.remove('bi-bookmark-check-fill');
+                    icon.classList.add('bi-bookmark-plus');
+                }
                 button.title = 'Add to watchlist';
 
                 // For full text buttons
@@ -145,7 +157,7 @@ async function toggleWatchlist(movieId) {
                 }
             }
         });
-        
+
         // If on the library page and movie was removed, remove the movie card
         if (document.body.classList.contains('library-page') && data.status === 'removed from') {
             const movieCards = document.querySelectorAll(`.movie-card[data-movie-id="${movieId}"]`);
@@ -206,6 +218,12 @@ async function toggleFavorite(movieId) {
         
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
+            // Remove all existing button classes
+            button.classList.forEach(cls => {
+                if (cls.startsWith('btn-')) {
+                    button.classList.remove(cls);
+                }
+            });
             if (data.status === 'added to') {
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-heart-fill';
@@ -261,9 +279,18 @@ async function toggleWatched(movieId) {
         
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
+            // Remove all existing button classes
+            button.classList.forEach(cls => {
+                if (cls.startsWith('btn-')) {
+                    button.classList.remove(cls);
+                }
+            });
             if (data.status === 'marked as watched') {
                 button.classList.add('btn-outline-light');
-                if (icon) icon.className = 'bi bi-eye-fill';
+                if (icon) {
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-fill');
+                }
                 button.title = 'Mark as not watched';
 
                 // For full text buttons
@@ -272,7 +299,10 @@ async function toggleWatched(movieId) {
                 }
             } else {
                 button.classList.add('btn-outline-light');
-                if (icon) icon.className = 'bi bi-eye';
+                if (icon) {
+                    icon.classList.remove('bi-eye-fill');
+                    icon.classList.add('bi-eye');
+                }
                 button.title = 'Mark as watched';
 
                 // For full text buttons
