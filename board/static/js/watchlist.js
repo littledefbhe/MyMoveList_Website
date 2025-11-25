@@ -87,25 +87,45 @@ async function toggleWatchlist(movieId) {
     );
 
     if (success) {
-        // Update all watchlist buttons for this movie
-        const buttons = document.querySelectorAll(`[onclick*="toggleWatchlist(${movieId})"]`);
-        buttons.forEach(button => {
+        // Update all watchlist buttons for this movie using both single and double quotes in the selector
+        const selectors = [
+            `[onclick*="toggleWatchlist('${movieId}')"]`,
+            `[onclick*='toggleWatchlist(\"${movieId}\")']`,
+            `[onclick*='toggleWatchlist(${movieId})']`,
+            `[onclick*="toggleWatchlist(${movieId})"]`
+        ];
+        
+        // Combine all matching buttons
+        const buttons = [];
+        selectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(btn => buttons.push(btn));
+        });
+        
+        // Remove duplicates
+        const uniqueButtons = [...new Set(buttons)];
+        
+        uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
             if (data.status === 'added to') {
-                button.classList.remove('btn-outline-light', 'btn-primary');
+                // For watchlist button
+                button.classList.remove('btn-outline-light');
                 button.classList.add('btn-outline-danger');
                 if (icon) icon.className = 'bi bi-bookmark-check-fill';
                 button.title = 'Remove from watchlist';
+                
+                // For full text buttons
                 if (button.textContent.includes('Add to Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-check-fill me-2"></i>Remove from Watchlist';
                 }
             } else {
                 button.classList.remove('btn-outline-danger');
-                button.classList.add('btn-outline-light', 'btn-primary');
+                button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-bookmark-plus';
                 button.title = 'Add to watchlist';
+                
+                // For full text buttons
                 if (button.textContent.includes('Remove from Watchlist')) {
-                    button.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add to Watchlist';
+                    button.innerHTML = '<i class="bi bi-bookmark-plus me-2"></i>Add to Watchlist';
                 }
             }
         });

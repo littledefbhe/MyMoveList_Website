@@ -38,16 +38,30 @@
                             <span class="runtime">{{ movie.runtime_minutes }} min</span>
                         {% endif %}
                     </div>
-                    <div class="movie-actions">
-                        {% if current_user.is_authenticated %}
-                        <button class="btn-watchlist" data-movie-id="{{ movie.id }}" title="{% if movie in current_user.watchlist %}Remove from watchlist{% else %}Add to watchlist{% endif %}">
-                            <i class="bi {% if movie in current_user.watchlist %}bi-check-circle{% else %}bi-plus-circle{% endif %}"></i>
+                    {% if current_user.is_authenticated %}
+                    <div class="movie-actions d-flex gap-2">
+                        <!-- Watchlist Button -->
+                        <button class="btn btn-sm btn-outline-light square-btn" 
+                                onclick="toggleWatchlist('{{ movie.id }}'); event.stopPropagation();"
+                                title="{{ 'Remove from watchlist' if movie in current_user.watchlist else 'Add to watchlist' }}">
+                            <i class="bi {{ 'bi-bookmark-check-fill' if movie in current_user.watchlist else 'bi-bookmark-plus' }}"></i>
                         </button>
-                        <button class="btn-rate" title="Rate this movie">
-                            <i class="bi bi-star"></i>
+                        
+                        <!-- Favorites Button -->
+                        <button class="btn btn-sm btn-outline-light square-btn" 
+                                onclick="toggleFavorite('{{ movie.id }}'); event.stopPropagation();"
+                                title="{{ 'Remove from favorites' if movie in current_user.favorites else 'Add to favorites' }}">
+                            <i class="bi {{ 'bi-heart-fill text-danger' if movie in current_user.favorites else 'bi-heart' }}"></i>
                         </button>
-                        {% endif %}
+                        
+                        <!-- Watched Button -->
+                        <button class="btn btn-sm btn-outline-light square-btn" 
+                                onclick="toggleWatched('{{ movie.id }}'); event.stopPropagation();"
+                                title="{{ 'Mark as not watched' if movie in current_user.watched_movies else 'Mark as watched' }}">
+                            <i class="bi {{ 'bi-eye-fill text-primary' if movie in current_user.watched_movies else 'bi-eye' }}"></i>
+                        </button>
                     </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -65,7 +79,7 @@
     font-weight: bold;
     padding: 3px 8px;
     border-radius: 4px;
-    z-index: 2;
+    z-index: 1;
     font-size: 0.9rem;
 }
 
