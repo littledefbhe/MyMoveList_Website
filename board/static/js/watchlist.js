@@ -107,9 +107,9 @@ async function toggleWatchlist(movieId) {
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
             if (data.status === 'added to') {
-                // For watchlist button
-                button.classList.remove('btn-outline-light');
-                button.classList.add('btn-outline-danger');
+                // For watchlist button - using btn-outline-light consistently to remove red highlight
+                button.classList.remove('btn-outline-danger');
+                button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-bookmark-check-fill';
                 button.title = 'Remove from watchlist';
                 
