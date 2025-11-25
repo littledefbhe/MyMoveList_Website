@@ -47,7 +47,7 @@
             {% else %}
         <div class="movie-grid">
             {% for movie in watchlist_movies %}
-            <div class="movie-card">
+            <div class="movie-card" data-movie-id="{{ movie.id }}">
                 <a href="{{ url_for('pages.movie_detail', movie_id=movie.id) }}" class="movie-poster-container">
                     {% if movie.poster_url %}
                         <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
@@ -228,54 +228,6 @@ function filterMoviesByCategory(category) {
     // For now, we'll just log the category
     console.log('Filtering movies by category:', category);
 }
-function toggleWatchlist(movieId) {
-    const button = document.querySelector(`button[onclick*="${movieId}"]`);
-    if (!button) return;
 
-    // Show loading state
-    const originalHTML = button.innerHTML;
-    button.disabled = true;
-    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-
-    // Make API call to toggle watchlist status
-    fetch('/api/watchlist/toggle', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({ movie_id: movieId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        
-        // If movie was removed, reload the page to update the list
-        if (data.status === 'removed from') {
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error updating watchlist:', error);
-        // Show error feedback
-        const feedback = document.createElement('div');
-        feedback.className = 'alert alert-danger mt-2 py-1';
-        feedback.role = 'alert';
-        feedback.textContent = 'Error updating watchlist. Please try again.';
-        button.parentNode.insertBefore(feedback, button.nextSibling);
-        
-        // Remove feedback after 3 seconds
-        setTimeout(() => {
-            feedback.remove();
-        }, 3000);
-    })
-    .finally(() => {
-        // Re-enable button
-        button.disabled = false;
-        button.innerHTML = originalHTML;
-    });
-}
 </script>
 {% endblock %}
