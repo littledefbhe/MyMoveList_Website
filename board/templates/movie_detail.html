@@ -18,25 +18,25 @@
             </div>
             
             {% if current_user.is_authenticated %}
-                <div class="d-flex gap-2 mb-3">
+                <div class="movie-actions">
                     <!-- Watchlist Button -->
-                    <button class="btn btn-lg flex-fill {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %} py-2 fw-bold" 
+                    <button class="btn {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %}" 
                             onclick="toggleWatchlist({{ movie.id }});">
-                        <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %} me-2"></i>
+                        <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %}"></i>
                         {% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}
                     </button>
                     
                     <!-- Favorites Button -->
-                    <button class="btn btn-lg flex-fill {% if movie in current_user.favorites %}btn-danger{% else %}btn-outline-light{% endif %} py-2"
+                    <button class="btn {% if movie in current_user.favorites %}btn-danger{% else %}btn-outline-light{% endif %}"
                             onclick="toggleFavorite({{ movie.id }});">
-                        <i class="bi {% if movie in current_user.favorites %}bi-heart-fill{% else %}bi-heart{% endif %} me-2"></i>
+                        <i class="bi {% if movie in current_user.favorites %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
                         {% if movie in current_user.favorites %}Favorited{% else %}Favorite{% endif %}
                     </button>
                     
                     <!-- Watched Button -->
-                    <button class="btn btn-lg flex-fill {% if movie in current_user.watched_movies %}btn-primary{% else %}btn-outline-light{% endif %} py-2"
+                    <button class="btn {% if movie in current_user.watched_movies %}btn-primary{% else %}btn-outline-light{% endif %}"
                             onclick="toggleWatched({{ movie.id }});">
-                        <i class="bi {% if movie in current_user.watched_movies %}bi-eye-fill{% else %}bi-eye{% endif %} me-2"></i>
+                        <i class="bi {% if movie in current_user.watched_movies %}bi-eye-fill{% else %}bi-eye{% endif %}"></i>
                         {% if movie in current_user.watched_movies %}Watched{% else %}Mark as Watched{% endif %}
                     </button>
                 </div>
