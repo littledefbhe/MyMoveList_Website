@@ -246,3 +246,89 @@ def toggle_watchlist():
     except Exception as e:
         print(f"Error toggling watchlist: {str(e)}")
         return jsonify({'error': 'An error occurred while updating your watchlist'}), 500
+
+
+@bp.route('/api/favorites/toggle', methods=['POST'])
+@login_required
+def toggle_favorite():
+    try:
+        data = request.get_json()
+        movie_id = data.get('movie_id')
+        
+        if not movie_id:
+            return jsonify({'error': 'Movie ID is required'}), 400
+            
+        movie = Movie.query.get(movie_id)
+        if not movie:
+            return jsonify({'error': 'Movie not found'}), 404
+            
+        # Toggle favorite status
+        is_favorite = current_user.is_favorite(movie)
+        
+        if is_favorite:
+            current_user.remove_from_favorites(movie)
+            status = 'removed from'
+            button_text = 'Add to Favorites'
+        else:
+            current_user.add_to_favorites(movie)
+            status = 'added to'
+            button_text = 'Remove from Favorites'
+        
+        db.session.commit()
+        
+        # Get updated favorites count for the movie
+        favorites_count = movie.stats.favorites_count if movie.stats and hasattr(movie.stats, 'favorites_count') else 0
+        
+        return jsonify({
+            'status': status,
+            'button_text': button_text,
+            'favorites_count': favorites_count,
+            'movie_id': movie_id
+        })
+        
+    except Exception as e:
+        print(f"Error toggling favorite: {str(e)}")
+        return jsonify({'error': 'An error occurred while updating your favorites'}), 500
+
+
+@bp.route('/api/watched/toggle', methods=['POST'])
+@login_required
+def toggle_watched():
+    try:
+        data = request.get_json()
+        movie_id = data.get('movie_id')
+        
+        if not movie_id:
+            return jsonify({'error': 'Movie ID is required'}), 400
+            
+        movie = Movie.query.get(movie_id)
+        if not movie:
+            return jsonify({'error': 'Movie not found'}), 404
+            
+        # Toggle watched status
+        has_watched = current_user.has_watched(movie)
+        
+        if has_watched:
+            current_user.unmark_as_watched(movie)
+            status = 'marked as not watched'
+            button_text = 'Mark as Watched'
+        else:
+            current_user.mark_as_watched(movie)
+            status = 'marked as watched'
+            button_text = 'Watched'
+        
+        db.session.commit()
+        
+        # Get updated watched count for the movie
+        watched_count = movie.stats.watched_count if movie.stats and hasattr(movie.stats, 'watched_count') else 0
+        
+        return jsonify({
+            'status': status,
+            'button_text': button_text,
+            'watched_count': watched_count,
+            'movie_id': movie_id
+        })
+        
+    except Exception as e:
+        print(f"Error toggling watched status: {str(e)}")
+        return jsonify({'error': 'An error occurred while updating watched status'}), 500

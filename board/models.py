@@ -5,10 +5,22 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-# Association table for user watchlist
+# Association tables
 watchlist = db.Table('watchlist',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True)
+)
+
+favorites = db.Table('favorites',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True),
+    db.Column('added_at', db.DateTime, default=datetime.utcnow)
+)
+
+watched = db.Table('watched',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True),
+    db.Column('watched_at', db.DateTime, default=datetime.utcnow)
 )
 
 # Association table for many-to-many relationship between movies and genres
@@ -35,6 +47,20 @@ class User(UserMixin, db.Model):
         secondary=watchlist,
         lazy='dynamic',
         backref=db.backref('watchers', lazy='dynamic')
+    )
+    
+    favorite_movies = db.relationship(
+        'Movie',
+        secondary=favorites,
+        lazy='dynamic',
+        backref=db.backref('favorited_by', lazy='dynamic')
+    )
+    
+    watched_movies = db.relationship(
+        'Movie',
+        secondary=watched,
+        lazy='dynamic',
+        backref=db.backref('watched_by', lazy='dynamic')
     )
     
     def set_password(self, password):
@@ -66,6 +92,54 @@ class User(UserMixin, db.Model):
     def is_in_watchlist(self, movie):
         """Check if a movie is in the user's watchlist."""
         return self.watchlist.filter(watchlist.c.movie_id == movie.id).count() > 0
+        
+    def is_favorite(self, movie):
+        """Check if a movie is in the user's favorites."""
+        return self.favorite_movies.filter(favorites.c.movie_id == movie.id).count() > 0
+        
+    def has_watched(self, movie):
+        """Check if a movie is in the user's watched list."""
+        return self.watched_movies.filter(watched.c.movie_id == movie.id).count() > 0
+        
+    def add_to_favorites(self, movie):
+        """Add a movie to the user's favorites if not already present."""
+        if not self.is_favorite(movie):
+            self.favorite_movies.append(movie)
+            if movie.stats:
+                movie.stats.favorites_count = (movie.stats.favorites_count or 0) + 1
+            db.session.commit()
+            return True
+        return False
+        
+    def remove_from_favorites(self, movie):
+        """Remove a movie from the user's favorites if present."""
+        if self.is_favorite(movie):
+            self.favorite_movies.remove(movie)
+            if movie.stats and (movie.stats.favorites_count or 0) > 0:
+                movie.stats.favorites_count -= 1
+            db.session.commit()
+            return True
+        return False
+        
+    def mark_as_watched(self, movie):
+        """Add a movie to the user's watched list if not already present."""
+        if not self.has_watched(movie):
+            self.watched_movies.append(movie)
+            if movie.stats:
+                movie.stats.watched_count = (movie.stats.watched_count or 0) + 1
+            db.session.commit()
+            return True
+        return False
+        
+    def unmark_as_watched(self, movie):
+        """Remove a movie from the user's watched list if present."""
+        if self.has_watched(movie):
+            self.watched_movies.remove(movie)
+            if movie.stats and (movie.stats.watched_count or 0) > 0:
+                movie.stats.watched_count -= 1
+            db.session.commit()
+            return True
+        return False
         
     def __repr__(self):
         return f'<User {self.username}>'

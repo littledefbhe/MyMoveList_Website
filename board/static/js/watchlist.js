@@ -54,26 +54,38 @@ if (!document.getElementById('notification-styles')) {
 }
 
 // Generic function to toggle movie status
-async function toggleMovieStatus(endpoint, movieId, successMessage, errorMessage) {
+async function toggleMovieStatus(endpoint, movieId, errorMessage) {
     try {
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        
+        if (!csrfToken) {
+            console.error('CSRF token not found');
+            showNotification('Security token missing. Please refresh the page.', 'error');
+            return { success: false, error: 'CSRF token not found' };
+        }
+
         const response = await fetch(`/api/${endpoint}/toggle`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
             },
-            body: JSON.stringify({ movie_id: movieId })
+            body: JSON.stringify({ movie_id: movieId }),
+            credentials: 'same-origin'
         });
 
         if (!response.ok) {
-            throw new Error(errorMessage);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || errorMessage);
         }
 
         const data = await response.json();
         return { success: true, data };
     } catch (error) {
         console.error(`${errorMessage}:`, error);
-        showNotification(errorMessage, 'error');
+        showNotification(error.message || errorMessage, 'error');
         return { success: false, error };
     }
 }
@@ -145,21 +157,38 @@ async function toggleWatchlist(movieId) {
 // Favorites functionality
 async function toggleFavorite(movieId) {
     const { success, data } = await toggleMovieStatus(
-        'favorites',
+        'favorite',
         movieId,
         'Failed to update favorites'
     );
 
     if (success) {
-        // Update all favorite buttons for this movie
-        const buttons = document.querySelectorAll(`[onclick*="toggleFavorite(${movieId})"]`);
-        buttons.forEach(button => {
+        // Update all favorite buttons for this movie using various possible selectors
+        const selectors = [
+            `[onclick*="toggleFavorite('${movieId}')"]`,
+            `[onclick*='toggleFavorite(\"${movieId}\")']`,
+            `[onclick*='toggleFavorite(${movieId})']`,
+            `[onclick*="toggleFavorite(${movieId})"]`
+        ];
+        
+        // Combine all matching buttons
+        const buttons = [];
+        selectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(btn => buttons.push(btn));
+        });
+        
+        // Remove duplicates
+        const uniqueButtons = [...new Set(buttons)];
+        
+        uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
             if (data.status === 'added to') {
                 button.classList.remove('btn-outline-light');
                 button.classList.add('btn-danger');
                 if (icon) icon.className = 'bi bi-heart-fill';
                 button.title = 'Remove from favorites';
+                
+                // For full text buttons
                 if (button.textContent.includes('Favorite')) {
                     button.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Favorited';
                 }
@@ -168,6 +197,8 @@ async function toggleFavorite(movieId) {
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-heart';
                 button.title = 'Add to favorites';
+                
+                // For full text buttons
                 if (button.textContent.includes('Favorited')) {
                     button.innerHTML = '<i class="bi bi-heart me-2"></i>Favorite';
                 }
@@ -189,15 +220,32 @@ async function toggleWatched(movieId) {
     );
 
     if (success) {
-        // Update all watched buttons for this movie
-        const buttons = document.querySelectorAll(`[onclick*="toggleWatched(${movieId})"]`);
-        buttons.forEach(button => {
+        // Update all watched buttons for this movie using various possible selectors
+        const selectors = [
+            `[onclick*="toggleWatched('${movieId}')"]`,
+            `[onclick*='toggleWatched(\"${movieId}\")']`,
+            `[onclick*='toggleWatched(${movieId})']`,
+            `[onclick*="toggleWatched(${movieId})"]`
+        ];
+        
+        // Combine all matching buttons
+        const buttons = [];
+        selectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(btn => buttons.push(btn));
+        });
+        
+        // Remove duplicates
+        const uniqueButtons = [...new Set(buttons)];
+        
+        uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
-            if (data.status === 'marked as') {
+            if (data.status === 'marked as watched') {
                 button.classList.remove('btn-outline-light');
                 button.classList.add('btn-primary');
                 if (icon) icon.className = 'bi bi-eye-fill';
                 button.title = 'Mark as not watched';
+                
+                // For full text buttons
                 if (button.textContent.includes('Mark as Watched')) {
                     button.innerHTML = '<i class="bi bi-eye-fill me-2"></i>Watched';
                 }
@@ -206,13 +254,15 @@ async function toggleWatched(movieId) {
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-eye';
                 button.title = 'Mark as watched';
+                
+                // For full text buttons
                 if (button.textContent.includes('Watched')) {
                     button.innerHTML = '<i class="bi bi-eye me-2"></i>Mark as Watched';
                 }
             }
         });
         
-        showNotification(`Movie ${data.status} watched`);
+        showNotification(`Movie ${data.status}`);
     }
     
     return success;
