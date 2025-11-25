@@ -20,14 +20,14 @@
             {% if current_user.is_authenticated %}
                 <div class="movie-actions">
                     <!-- Watchlist Button -->
-                    <button class="btn {% if in_watchlist %}btn-outline-danger{% else %}btn-primary{% endif %}"
+                    <button class="btn btn-outline-light"
                             onclick="toggleWatchlist('{{ movie.id }}');">
                         <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %}"></i>
                         {% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}
                     </button>
-                    
+
                     <!-- Favorites Button -->
-                    <button class="btn {% if current_user.is_favorite(movie) %}btn-danger{% else %}btn-outline-light{% endif %}"
+                    <button class="btn btn-outline-light"
                             onclick="toggleFavorite('{{ movie.id }}');"
                             title="{% if current_user.is_favorite(movie) %}Remove from favorites{% else %}Add to favorites{% endif %}">
                         <i class="bi {% if current_user.is_favorite(movie) %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
@@ -35,7 +35,7 @@
                     </button>
 
                     <!-- Watched Button -->
-                    <button class="btn {% if current_user.has_watched(movie) %}btn-primary{% else %}btn-outline-light{% endif %}"
+                    <button class="btn btn-outline-light"
                             onclick="toggleWatched('{{ movie.id }}');"
                             title="{% if current_user.has_watched(movie) %}Mark as not watched{% else %}Mark as watched{% endif %}">
                         <i class="bi {% if current_user.has_watched(movie) %}bi-eye-fill{% else %}bi-eye{% endif %}"></i>

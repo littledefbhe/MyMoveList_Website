@@ -125,22 +125,20 @@ async function toggleWatchlist(movieId) {
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
             if (data.status === 'added to') {
-                // For watchlist button - using btn-outline-light consistently to remove red highlight
-                button.classList.remove('btn-outline-danger');
+                // For watchlist button - using btn-outline-light consistently
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-bookmark-check-fill';
                 button.title = 'Remove from watchlist';
-                
+
                 // For full text buttons
                 if (button.textContent.includes('Add to Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-check-fill me-2"></i>Remove from Watchlist';
                 }
             } else {
-                button.classList.remove('btn-outline-danger');
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-bookmark-plus';
                 button.title = 'Add to watchlist';
-                
+
                 // For full text buttons
                 if (button.textContent.includes('Remove from Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-plus me-2"></i>Add to Watchlist';
@@ -209,21 +207,19 @@ async function toggleFavorite(movieId) {
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
             if (data.status === 'added to') {
-                button.classList.remove('btn-outline-light');
-                button.classList.add('btn-danger');
+                button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-heart-fill';
                 button.title = 'Remove from favorites';
-                
+
                 // For full text buttons
                 if (button.textContent.includes('Favorite')) {
                     button.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Favorited';
                 }
             } else {
-                button.classList.remove('btn-danger');
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-heart';
                 button.title = 'Add to favorites';
-                
+
                 // For full text buttons
                 if (button.textContent.includes('Favorited')) {
                     button.innerHTML = '<i class="bi bi-heart me-2"></i>Favorite';
@@ -266,21 +262,19 @@ async function toggleWatched(movieId) {
         uniqueButtons.forEach(button => {
             const icon = button.querySelector('i');
             if (data.status === 'marked as watched') {
-                button.classList.remove('btn-outline-light');
-                button.classList.add('btn-primary');
+                button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-eye-fill';
                 button.title = 'Mark as not watched';
-                
+
                 // For full text buttons
                 if (button.textContent.includes('Mark as Watched')) {
                     button.innerHTML = '<i class="bi bi-eye-fill me-2"></i>Watched';
                 }
             } else {
-                button.classList.remove('btn-primary');
                 button.classList.add('btn-outline-light');
                 if (icon) icon.className = 'bi bi-eye';
                 button.title = 'Mark as watched';
-                
+
                 // For full text buttons
                 if (button.textContent.includes('Watched')) {
                     button.innerHTML = '<i class="bi bi-eye me-2"></i>Mark as Watched';
