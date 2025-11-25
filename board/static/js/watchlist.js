@@ -327,7 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (button) {
             e.preventDefault();
             e.stopPropagation();
-            const match = button.getAttribute('onclick').match(/toggleWatchlist\((\d+)\)/);
+            // Updated regex to match both quoted and unquoted movie IDs
+            const match = button.getAttribute('onclick').match(/toggleWatchlist\(['"]?(\d+)['"]?\)/);
             if (match && match[1]) {
                 toggleWatchlist(match[1]);
             }
@@ -339,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (button) {
             e.preventDefault();
             e.stopPropagation();
-            const match = button.getAttribute('onclick').match(/toggleFavorite\((\d+)\)/);
+            const match = button.getAttribute('onclick').match(/toggleFavorite\(['"]?(\d+)['"]?\)/);
             if (match && match[1]) {
                 toggleFavorite(match[1]);
             }
@@ -351,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (button) {
             e.preventDefault();
             e.stopPropagation();
-            const match = button.getAttribute('onclick').match(/toggleWatched\((\d+)\)/);
+            const match = button.getAttribute('onclick').match(/toggleWatched\(['"]?(\d+)['"]?\)/);
             if (match && match[1]) {
                 toggleWatched(match[1]);
             }
