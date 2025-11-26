@@ -22,9 +22,19 @@
                 <i class="bi bi-list"></i>
             </button>
             <h1 class="mobile-logo">MyMovieList</h1>
-            <div class="mobile-search-icon">
-                <i class="bi bi-search" id="mobileSearchToggle"></i>
-            </div>
+            <button class="search-toggle" id="mobileSearchToggle" aria-label="Search">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Search Container -->
+        <div class="mobile-search-container" id="mobileSearchContainer" style="display: none;">
+            <form action="{{ url_for('pages.search') }}" method="GET" class="w-100 d-flex align-items-center" id="mobileSearchForm">
+                <input type="text" name="q" class="search-input" placeholder="Search for movies..." aria-label="Search movies" required>
+                <button type="submit" class="search-button" aria-label="Search">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
         </div>
 
         <!-- Desktop Header -->
@@ -93,10 +103,13 @@
         
         <!-- Mobile Menu -->
         <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        
+        <!-- Mobile Menu -->
         <nav class="mobile-menu" id="mobileMenu">
             <div class="mobile-menu-header">
                 <h3>Menu</h3>
-                <button class="close-menu" id="closeMobileMenu">&times;</button>
             </div>
             <ul class="mobile-nav-links">
                 <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}">

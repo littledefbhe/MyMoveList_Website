@@ -3,7 +3,7 @@
 {% block title %}{% if is_own_profile %}My Profile{% else %}{{ user.username }}'s Profile{% endif %} - MyMovieList{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container py-5 profile-page">
     <div class="row">
         <div class="col-md-4">
             <div class="card mb-4">
@@ -192,11 +192,6 @@
                         <label for="email" class="form-label">Email address</label>
                         <input type="email" class="form-control bg-dark text-light" id="email" name="email" 
                                value="{{ current_user.email }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="bio" class="form-label">Bio</label>
-                        <textarea class="form-control bg-dark text-light" id="bio" name="bio" 
-                                 rows="3" placeholder="Tell us about yourself...">{{ current_user.bio or '' }}</textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">

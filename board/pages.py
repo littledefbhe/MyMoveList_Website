@@ -491,9 +491,6 @@ def update_profile():
                 return redirect(url_for('pages.profile'))
             current_user.email = new_email
         
-        # Update bio
-        current_user.bio = request.form.get('bio', '')
-        
         db.session.commit()
         flash('Profile updated successfully!', 'success')
         

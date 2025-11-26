@@ -24,12 +24,12 @@
                 {{ form.password(class_='form-control', placeholder='Enter password') }}
                 <div class="form-text text-muted">
                     <small>Password must contain:</small>
-                    <ul class="mb-0 pl-3" style="list-style-type: none;">
-                        <li class="text-danger" id="length-req">✓ At least 8 characters</li>
-                        <li class="text-danger" id="upper-req">✓ At least one uppercase letter (A-Z)</li>
-                        <li class="text-danger" id="lower-req">✓ At least one lowercase letter (a-z)</li>
-                        <li class="text-danger" id="number-req">✓ At least one number (0-9)</li>
-                        <li class="text-danger" id="special-req">✓ At least one special character (!@#$%^&*)</li>
+                    <ul class="mb-0 pl-0" style="list-style-type: none;">
+                        <li class="password-requirement invalid" id="length-req">At least 8 characters</li>
+                        <li class="password-requirement invalid" id="upper-req">At least one uppercase letter (A-Z)</li>
+                        <li class="password-requirement invalid" id="lower-req">At least one lowercase letter (a-z)</li>
+                        <li class="password-requirement invalid" id="number-req">At least one number (0-9)</li>
+                        <li class="password-requirement invalid" id="special-req">At least one special character (!@#$%^&*)</li>
                     </ul>
                 </div>
                 {% if form.password.errors %}
@@ -76,12 +76,18 @@
             const hasNumber = /[0-9]/.test(password);
             const hasSpecial = /[^A-Za-z0-9]/.test(password);
             
-            // Update requirement indicators
-            requirements.length.style.color = hasLength ? '#28a745' : '#dc3545';
-            requirements.upper.style.color = hasUpper ? '#28a745' : '#dc3545';
-            requirements.lower.style.color = hasLower ? '#28a745' : '#dc3545';
-            requirements.number.style.color = hasNumber ? '#28a745' : '#dc3545';
-            requirements.special.style.color = hasSpecial ? '#28a745' : '#dc3545';
+            // Update requirement indicators with classes instead of inline styles
+            updateRequirement(requirements.length, hasLength);
+            updateRequirement(requirements.upper, hasUpper);
+            updateRequirement(requirements.lower, hasLower);
+            updateRequirement(requirements.number, hasNumber);
+            updateRequirement(requirements.special, hasSpecial);
+            
+            // Function to update requirement element
+            function updateRequirement(element, isValid) {
+                element.classList.toggle('valid', isValid);
+                element.classList.toggle('invalid', !isValid);
+            }
         }
 
         // Add event listener for real-time validation
@@ -93,6 +99,32 @@
 </script>
 
 <style>
+/* Password requirement styles */
+.password-requirement {
+    transition: color 0.3s ease, font-weight 0.3s ease;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.password-requirement::before {
+    content: '✓';
+    display: inline-block;
+    margin-right: 0.5rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.password-requirement.valid {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.password-requirement.invalid {
+    color: #dc3545;
+}
+
+/* Auth container styles */
 .auth-container {
     display: flex;
     justify-content: center;
