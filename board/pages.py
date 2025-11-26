@@ -458,6 +458,55 @@ def profile(user_id=None):
         is_own_profile=is_own_profile
     )
 
+@bp.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    try:
+        # Update username if changed
+        new_username = request.form.get('username')
+        if new_username and new_username != current_user.username:
+            # Check if username is already taken
+            existing_user = User.query.filter_by(username=new_username).first()
+            if existing_user and existing_user.id != current_user.id:
+                flash('Username already taken. Please choose another one.', 'danger')
+                return redirect(url_for('pages.profile'))
+            current_user.username = new_username
+        
+        # Update email if changed
+        new_email = request.form.get('email')
+        if new_email and new_email != current_user.email:
+            # Check if email is already in use
+            existing_email = User.query.filter_by(email=new_email).first()
+            if existing_email and existing_email.id != current_user.id:
+                flash('Email already in use. Please use another email.', 'danger')
+                return redirect(url_for('pages.profile'))
+            current_user.email = new_email
+        
+        # Update bio
+        current_user.bio = request.form.get('bio', '')
+        
+        # Handle profile picture upload
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file.filename != '':
+                # In a production app, you'd want to:
+                # 1. Generate a unique filename
+                # 2. Save the file to a dedicated uploads folder
+                # 3. Resize/crop the image if needed
+                # 4. Save the filename to the user's profile_picture field
+                # For now, we'll just store the filename
+                current_user.profile_picture = file.filename
+        
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while updating your profile. Please try again.', 'danger')
+        print(f"Error updating profile: {str(e)}")
+    
+    return redirect(url_for('pages.profile'))
+
 @bp.route('/community')
 def community():
     """Community page showing user profiles and activity"""
