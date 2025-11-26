@@ -438,12 +438,13 @@ def profile():
         current_user.favorite_movies
     ).order_by(Movie.created_at.desc()).limit(6).all()
     
-    # For demonstration - in a real app, you'd have an Activity model
-    recent_activity = []
-    
     return render_template(
         'profile.html',
         stats=stats,
-        recent_movies=recent_movies,
-        recent_activity=recent_activity
+        recent_movies=recent_movies
     )
+
+@bp.route('/community')
+def community():
+    """Community page showing user interactions and activity"""
+    return render_template('community.html')

@@ -64,6 +64,7 @@
                 <ul class="nav-links">
                     <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}"><a href="{{ url_for('pages.home') }}">Home</a></li>
                     <li class="{% if request.endpoint == 'pages.top_movies' %}active{% endif %}"><a href="{{ url_for('pages.top_movies') }}">Top Movies</a></li>
+                    <li class="{% if request.endpoint == 'pages.community' %}active{% endif %}"><a href="{{ url_for('pages.community') }}">Community</a></li>
                     {% if current_user.is_authenticated %}
                     <li class="{% if request.endpoint == 'pages.my_library' %}active{% endif %}"><a href="{{ url_for('pages.my_library') }}">My Library</a></li>
                     {% endif %}
