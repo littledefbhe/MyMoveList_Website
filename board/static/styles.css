@@ -1,8 +1,8 @@
 :root {
     --primary-color: #0f0f0f;
     --secondary-color: #4a4a4a;
-    --accent-color: #0940e5; /* Blue accent color */
-    --accent-hover: #0a4dff;
+    --accent-color: #3a7bff; /* Lighter blue accent color */
+    --accent-hover: #5c91ff;
     --accent-transparent: #0940e55b;
     --background-color: #0a0a0a;
     --card-bg: #121212;
@@ -207,7 +207,7 @@ body {
 .header .search-input:focus {
     outline: none !important;
     border-color: var(--accent-color) !important;
-    box-shadow: 0 0 0 2px rgba(9, 64, 229, 0.2) !important;
+    box-shadow: 0 0 0 2px rgba(58, 123, 255, 0.3) !important;
 }
 
 .header .search-icon {
