@@ -1,0 +1,23 @@
+/* board/static/css/movie_transitions.css */
+.movie-card {
+    transition: opacity 0.3s ease;
+}
+
+/* Make sure the movie grid has a relative position for proper stacking context */
+.movie-grid {
+    position: relative;
+}
+
+/* Style for the empty state */
+.empty-state {
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Make sure the watched and favorites tabs have a min-height to prevent layout shifts */
+#watched,
+#favorites {
+    min-height: 300px;
+}
