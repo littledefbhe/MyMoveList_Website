@@ -316,13 +316,13 @@ async function toggleWatched(movieId) {
                 button.classList.add('btn-outline-light');
                 if (icon) {
                     icon.classList.remove('bi-eye');
-                    icon.classList.add('bi-eye-fill', 'text-primary');
+                    icon.classList.add('bi-eye-fill');
                 }
                 button.title = 'Mark as not watched';
 
                 // For full text buttons
                 if (button.textContent.includes('Mark as Watched')) {
-                    button.innerHTML = '<i class="bi bi-eye-fill me-2 text-primary"></i>Watched';
+                    button.innerHTML = '<i class="bi bi-eye-fill me-2"></i>Watched';
                 }
             } else {
                 button.classList.add('btn-outline-light');
