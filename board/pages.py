@@ -421,3 +421,29 @@ def toggle_watched():
     except Exception as e:
         print(f"Error toggling watched status: {str(e)}")
         return jsonify({'error': 'An error occurred while updating watched status'}), 500
+
+@bp.route('/profile')
+@login_required
+def profile():
+    # Get user's movie stats
+    stats = {
+        'watchlist_count': current_user.watchlist.count(),
+        'watched_count': current_user.watched_movies.count(),
+        'favorites_count': current_user.favorite_movies.count()
+    }
+    
+    # Get recently added movies (last 6)
+    recent_movies = current_user.watchlist.union(
+        current_user.watched_movies,
+        current_user.favorite_movies
+    ).order_by(Movie.created_at.desc()).limit(6).all()
+    
+    # For demonstration - in a real app, you'd have an Activity model
+    recent_activity = []
+    
+    return render_template(
+        'profile.html',
+        stats=stats,
+        recent_movies=recent_movies,
+        recent_activity=recent_activity
+    )

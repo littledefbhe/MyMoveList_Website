@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import Flask, session
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect, generate_csrf
@@ -43,6 +44,35 @@ def create_app():
     @app.context_processor
     def inject_csrf_token():
         return dict(csrf_token=generate_csrf)
+    
+    # Custom Jinja filter for formatting relative time
+    @app.template_filter('timesince')
+    def timesince(dt, default="just now"):
+        """
+        Returns string representing "time since" e.g.
+        3 days ago, 5 hours ago etc.
+        """
+        if dt is None:
+            return ""
+            
+        now = datetime.utcnow()
+        diff = now - dt
+        
+        periods = (
+            (diff.days // 365, "year", "years"),
+            (diff.days // 30, "month", "months"),
+            (diff.days // 7, "week", "weeks"),
+            (diff.days, "day", "days"),
+            (diff.seconds // 3600, "hour", "hours"),
+            (diff.seconds // 60, "minute", "minutes"),
+            (diff.seconds, "second", "seconds"),
+        )
+        
+        for period, singular, plural in periods:
+            if period > 0:
+                return f"{period} {singular if period == 1 else plural} ago"
+                
+        return default
     
     # Custom Jinja filter for formatting numbers
     @app.template_filter('format_number')

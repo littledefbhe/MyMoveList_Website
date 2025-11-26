@@ -197,7 +197,6 @@ async function toggleWatchlist(movieId) {
             `[onclick*='toggleWatchlist("${movieId}")`,
             `[onclick*='toggleWatchlist(${movieId})`,
             `[onclick*="toggleWatchlist(${movieId})`,
-            // Add selectors for any other button variations
             `[data-movie-id="${movieId}"] .watchlist-btn`,
             `[data-movie-id='${movieId}'] .watchlist-btn`
         ];
@@ -259,9 +258,19 @@ async function toggleWatchlist(movieId) {
                 }
                 showNotification('Movie removed from your watchlist');
 
-                // If we're in the library page, remove the movie card from the watchlist
+                // Only remove from watchlist tab if we're in the library
                 if (window.location.pathname.includes('/my-library')) {
-                    removeMovieCard(movieId, 'all');
+                    const watchlistTab = document.querySelector('#watchlist .movie-grid');
+                    const movieCard = watchlistTab?.querySelector(`.movie-card[data-movie-id="${movieId}"]`);
+                    if (movieCard) {
+                        movieCard.style.transition = 'opacity 0.3s ease';
+                        movieCard.style.opacity = '0';
+                        setTimeout(() => {
+                            movieCard.remove();
+                            // Update only the watchlist tab count
+                            updateTabCount('watchlist');
+                        }, 200);
+                    }
                 }
             }
         });

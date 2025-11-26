@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - MyMovieList{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="avatar-container mb-3">
+                        <div class="avatar-placeholder">
+                            <i class="bi bi-person-circle" style="font-size: 5rem; color: #6c757d;"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-1">{{ current_user.username }}</h4>
+                    <p class="text-muted mb-3">Member since {{ current_user.created_at.strftime('%B %Y') }}</p>
+                    
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i> Edit Profile
+                        </a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-gear"></i> Settings
+                        </a>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ stats.watchlist_count|default(0) }}</div>
+                            <div class="stat-label">Watchlist</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ stats.watched_count|default(0) }}</div>
+                            <div class="stat-label">Watched</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ stats.favorites_count|default(0) }}</div>
+                            <div class="stat-label">Favorites</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">Account Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted mb-1">Username</label>
+                        <div class="form-control bg-light">{{ current_user.username }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted mb-1">Email</label>
+                        <div class="form-control bg-light">{{ current_user.email }}</div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small text-muted mb-1">Member Since</label>
+                        <div class="form-control bg-light">{{ current_user.created_at.strftime('%B %d, %Y') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Recently Added</h6>
+                    <a href="{{ url_for('pages.my_library') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_movies %}
+                        <div class="row row-cols-2 row-cols-md-3 g-3">
+                            {% for movie in recent_movies %}
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        {% if movie.poster_url %}
+                                            <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
+                                        {% else %}
+                                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                <i class="bi bi-film" style="font-size: 3rem; color: #6c757d;"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-body p-2">
+                                            <h6 class="card-title mb-1 text-truncate">{{ movie.title }}</h6>
+                                            <p class="card-text small text-muted mb-1">{{ movie.release_year }}</p>
+                                            <div class="d-flex gap-1">
+                                                {% if movie in current_user.watchlist %}
+                                                    <span class="badge bg-primary">Watchlist</span>
+                                                {% endif %}
+                                                {% if movie in current_user.watched_movies %}
+                                                    <span class="badge bg-success">Watched</span>
+                                                {% endif %}
+                                                {% if movie in current_user.favorite_movies %}
+                                                    <span class="badge bg-warning text-dark">Favorite</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-collection" style="font-size: 2.5rem; color: #6c757d;"></i>
+                            <p class="mt-2 mb-0">No movies added yet</p>
+                            <a href="{{ url_for('pages.home') }}" class="btn btn-sm btn-primary mt-2">
+                                <i class="bi bi-plus-circle"></i> Add Movies
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Activity</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% if recent_activity %}
+                            {% for activity in recent_activity %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <p class="mb-1">
+                                            <strong>{{ activity.movie.title }}</strong>
+                                            <span class="text-muted">was {{ activity.action }}</span>
+                                        </p>
+                                        <small class="text-muted">{{ activity.timestamp|timesince }} ago</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-activity" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                <p class="mt-2 mb-0">No recent activity</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.avatar-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #e9ecef;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--accent-color);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+    border-left: 2px solid #e9ecef;
+    padding-left: 1.5rem;
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    top: 4px;
+}
+
+.timeline-content {
+    padding-bottom: 0.5rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-primary {
+    --bs-btn-hover-bg: var(--accent-color);
+    --bs-btn-hover-border-color: var(--accent-color);
+    --bs-btn-active-bg: var(--accent-color);
+    --bs-btn-active-border-color: var(--accent-color);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--accent-color);
+    --bs-btn-border-color: var(--accent-color);
+    --bs-btn-hover-bg: var(--accent-hover);
+    --bs-btn-hover-border-color: var(--accent-hover);
+    --bs-btn-active-bg: var(--accent-hover);
+    --bs-btn-active-border-color: var(--accent-hover);
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+.bg-primary {
+    background-color: var(--accent-color) !important;
+}
+</style>
+{% endblock %}
