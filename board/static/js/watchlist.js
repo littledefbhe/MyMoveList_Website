@@ -386,11 +386,11 @@ function updateButtonState(button, type, isActive) {
         }
     } else if (type === 'watched') {
         if (isActive) {
-            icon.classList.remove('bi-eye');
+            icon.classList.remove('bi-eye', 'text-primary');
             icon.classList.add('bi-eye-fill');
             button.title = 'Mark as not watched';
         } else {
-            icon.classList.remove('bi-eye-fill');
+            icon.classList.remove('bi-eye-fill', 'text-primary');
             icon.classList.add('bi-eye');
             button.title = 'Mark as watched';
         }
@@ -429,6 +429,11 @@ async function initializeButtonStates() {
             const movieId = button.getAttribute('data-movie-id') || 
                            (button.getAttribute('onclick') || '').match(/toggleWatched\(['"](\d+)['"]\)/)?.[1];
             if (movieId && data.watched.includes(parseInt(movieId))) {
+                // Remove any existing text-primary class from the icon
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('text-primary');
+                }
                 updateButtonState(button, 'watched', true);
             }
         });
