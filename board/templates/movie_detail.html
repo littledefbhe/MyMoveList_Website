@@ -21,9 +21,10 @@
                 <div class="movie-actions">
                     <!-- Watchlist Button -->
                     <button class="btn btn-outline-light"
-                            onclick="toggleWatchlist('{{ movie.id }}');">
-                        <i class="bi {% if in_watchlist %}bi-dash-circle{% else %}bi-plus-circle{% endif %}"></i>
-                        {% if in_watchlist %}Remove from Watchlist{% else %}Add to Watchlist{% endif %}
+                            onclick="toggleWatchlist('{{ movie.id }}');"
+                            title="{% if in_watchlist %}Remove from watchlist{% else %}Add to watchlist%}">
+                        <i class="bi {% if in_watchlist %}bi-bookmark-check-fill{% else %}bi-bookmark-plus{% endif %}"></i>
+                        {% if in_watchlist %}In Watchlist{% else %}Add to Watchlist{% endif %}
                     </button>
 
                     <!-- Favorites Button -->
