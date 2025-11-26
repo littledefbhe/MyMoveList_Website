@@ -66,9 +66,9 @@ async function toggleMovieStatus(endpoint, movieId, errorMessage) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
         
         if (!csrfToken) {
-            console.error('CSRF token not found');
-            showNotification('Security token missing. Please refresh the page.', 'error');
-            return { success: false, error: 'CSRF token not found' };
+            const error = 'CSRF token not found';
+            console.error(error);
+            return { success: false, error };
         }
 
         const response = await fetch(`/api/${endpoint}/toggle`, {
@@ -91,8 +91,7 @@ async function toggleMovieStatus(endpoint, movieId, errorMessage) {
         return { success: true, data };
     } catch (error) {
         console.error(`${errorMessage}:`, error);
-        showNotification(error.message || errorMessage, 'error');
-        return { success: false, error };
+        return { success: false, error: error.message || errorMessage };
     }
 }
 
@@ -194,10 +193,10 @@ async function toggleWatchlist(movieId) {
     if (success) {
         // Update all watchlist buttons for this movie
         const selectors = [
-            `[onclick*="toggleWatchlist('${movieId}')"]`,
-            `[onclick*='toggleWatchlist(\"${movieId}\")']`,
-            `[onclick*='toggleWatchlist(${movieId})']`,
-            `[onclick*="toggleWatchlist(${movieId})"]`,
+            `[onclick*="toggleWatchlist('${movieId}')`,
+            `[onclick*='toggleWatchlist("${movieId}")`,
+            `[onclick*='toggleWatchlist(${movieId})`,
+            `[onclick*="toggleWatchlist(${movieId})`,
             // Add selectors for any other button variations
             `[data-movie-id="${movieId}"] .watchlist-btn`,
             `[data-movie-id='${movieId}'] .watchlist-btn`
@@ -237,6 +236,7 @@ async function toggleWatchlist(movieId) {
                 if (button.textContent.includes('Add to Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-check-fill me-2"></i>In Watchlist';
                 }
+                showNotification('Movie added to your watchlist');
             } else {
                 button.classList.add('btn-outline-light');
                 if (icon) {
@@ -249,6 +249,7 @@ async function toggleWatchlist(movieId) {
                 if (button.textContent.includes('In Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-plus me-2"></i>Add to Watchlist';
                 }
+                showNotification('Movie removed from your watchlist');
 
                 // If we're in the library page, remove the movie card from the watchlist
                 if (window.location.pathname.includes('/my-library')) {
@@ -256,8 +257,8 @@ async function toggleWatchlist(movieId) {
                 }
             }
         });
-        
-        showNotification(`Movie ${data.status} your watchlist`);
+    } else {
+        showNotification(data.error || 'Failed to update watchlist', 'error');
     }
     
     return success;
@@ -274,10 +275,10 @@ async function toggleFavorite(movieId) {
     if (success) {
         // Update all favorite buttons for this movie
         const selectors = [
-            `[onclick*="toggleFavorite('${movieId}')"]`,
-            `[onclick*='toggleFavorite(\"${movieId}\")']`,
-            `[onclick*='toggleFavorite(${movieId})']`,
-            `[onclick*="toggleFavorite(${movieId})"]`
+            `[onclick*="toggleFavorite('${movieId}')`,
+            `[onclick*='toggleFavorite("${movieId}")`,
+            `[onclick*='toggleFavorite(${movieId})`,
+            `[onclick*="toggleFavorite(${movieId})`
         ];
         
         // Combine all matching buttons
@@ -309,6 +310,7 @@ async function toggleFavorite(movieId) {
                 if (button.textContent.includes('Favorite')) {
                     button.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Favorited';
                 }
+                showNotification('Movie added to your favorites');
             } else {
                 button.classList.add('btn-outline-light');
                 if (icon) {
@@ -321,6 +323,7 @@ async function toggleFavorite(movieId) {
                 if (button.textContent.includes('Favorited')) {
                     button.innerHTML = '<i class="bi bi-heart me-2"></i>Favorite';
                 }
+                showNotification('Movie removed from your favorites');
 
                 // If we're in the library page, remove the movie card from the favorites tab
                 if (window.location.pathname.includes('/my-library')) {
@@ -328,8 +331,8 @@ async function toggleFavorite(movieId) {
                 }
             }
         });
-        
-        showNotification(`Movie ${data.status} your favorites`);
+    } else {
+        showNotification(data.error || 'Failed to update favorites', 'error');
     }
     
     return success;
@@ -344,12 +347,12 @@ async function toggleWatched(movieId) {
     );
 
     if (success) {
-        // Update all watched buttons for this movie
+        // Update all watched buttons for this movie using various possible selectors
         const selectors = [
-            `[onclick*="toggleWatched('${movieId}')"]`,
-            `[onclick*='toggleWatched(\"${movieId}\")']`,
-            `[onclick*='toggleWatched(${movieId})']`,
-            `[onclick*="toggleWatched(${movieId})"]`
+            `[onclick*="toggleWatched('${movieId}')`,
+            `[onclick*='toggleWatched("${movieId}")`,
+            `[onclick*='toggleWatched(${movieId})`,
+            `[onclick*="toggleWatched(${movieId})`
         ];
         
         // Combine all matching buttons
@@ -372,7 +375,7 @@ async function toggleWatched(movieId) {
             if (data.status === 'marked as watched') {
                 button.classList.add('btn-outline-light');
                 if (icon) {
-                    icon.classList.remove('bi-eye');
+                    icon.classList.remove('bi-eye', 'text-primary');
                     icon.classList.add('bi-eye-fill');
                 }
                 button.title = 'Mark as not watched';
@@ -381,6 +384,7 @@ async function toggleWatched(movieId) {
                 if (button.textContent.includes('Mark as Watched')) {
                     button.innerHTML = '<i class="bi bi-eye-fill me-2"></i>Watched';
                 }
+                showNotification('Movie marked as watched');
             } else {
                 button.classList.add('btn-outline-light');
                 if (icon) {
@@ -393,6 +397,7 @@ async function toggleWatched(movieId) {
                 if (button.textContent.includes('Watched')) {
                     button.innerHTML = '<i class="bi bi-eye me-2"></i>Mark as Watched';
                 }
+                showNotification('Movie marked as not watched');
 
                 // If we're in the library page, remove the movie card from the watched tab
                 if (window.location.pathname.includes('/my-library')) {
@@ -400,8 +405,8 @@ async function toggleWatched(movieId) {
                 }
             }
         });
-        
-        showNotification(`Movie ${data.status}`);
+    } else {
+        showNotification(data.error || 'Failed to update watched status', 'error');
     }
     
     return success;
