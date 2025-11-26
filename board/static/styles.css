@@ -975,6 +975,18 @@ a:hover {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Square action buttons */
+.square-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    min-width: 32px;
+    flex-shrink: 0;
+}
+
 /* Action Buttons */
 .btn-watchlist {
     background: rgba(255, 255, 255, 0.1);

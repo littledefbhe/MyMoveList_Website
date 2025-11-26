@@ -47,12 +47,12 @@
                     {% if current_user.is_authenticated %}
                     <div class="movie-actions d-flex gap-2">
                         <!-- Watchlist Button -->
-                        <button class="btn btn-sm btn-outline-light square-btn" 
+                        <button class="btn btn-sm btn-outline-light square-btn"
                                 onclick="toggleWatchlist('{{ movie.id }}'); event.stopPropagation();"
                                 title="{{ 'Remove from watchlist' if movie in current_user.watchlist else 'Add to watchlist' }}">
                             <i class="bi {{ 'bi-bookmark-check-fill' if movie in current_user.watchlist else 'bi-bookmark-plus' }}"></i>
                         </button>
-                        
+
                         <!-- Favorites Button -->
                         <button class="btn btn-sm btn-outline-light square-btn"
                                 onclick="toggleFavorite('{{ movie.id }}'); event.stopPropagation();"
