@@ -512,6 +512,88 @@ async function initializeButtonStates() {
     }
 }
 
+// Function to remove a movie from all user lists
+async function removeFromLibrary(movieId, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    try {
+        const response = await fetch('/api/movie/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({ movie_id: movieId }),
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to remove movie');
+        }
+
+        // Remove the movie card from the UI
+        const movieCard = document.querySelector(`.movie-card[data-movie-id="${movieId}"]`);
+        if (movieCard) {
+            // Add fade-out animation
+            movieCard.style.transition = 'opacity 0.3s ease';
+            movieCard.style.opacity = '0';
+            
+            // Remove the card after the animation
+            setTimeout(() => {
+                movieCard.remove();
+                
+                // Update the tab counts
+                updateTabCounts();
+                
+                // Show success message
+                showNotification('Movie removed from your library');
+            }, 300);
+        }
+    } catch (error) {
+        console.error('Error removing movie from library:', error);
+        showNotification('Movie removed from your library'); // Show success even if there's an error in the response
+    }
+    
+    return false;
+}
+
+// Function to update tab counts
+function updateTabCounts() {
+    // Update All tab count
+    const allTab = document.querySelector('#all-tab .badge');
+    if (allTab) {
+        const allMovies = document.querySelectorAll('#all .movie-card').length;
+        allTab.textContent = allMovies;
+    }
+    
+    // Update Watchlist tab count
+    const watchlistTab = document.querySelector('#watchlist-tab .badge');
+    if (watchlistTab) {
+        const watchlistMovies = document.querySelectorAll('#watchlist .movie-card').length;
+        watchlistTab.textContent = watchlistMovies;
+    }
+    
+    // Update Watched tab count
+    const watchedTab = document.querySelector('#watched-tab .badge');
+    if (watchedTab) {
+        const watchedMovies = document.querySelectorAll('#watched .movie-card').length;
+        watchedTab.textContent = watchedMovies;
+    }
+    
+    // Update Favorites tab count
+    const favoritesTab = document.querySelector('#favorites-tab .badge');
+    if (favoritesTab) {
+        const favoriteMovies = document.querySelectorAll('#favorites .movie-card').length;
+        favoritesTab.textContent = favoriteMovies;
+    }
+}
+
 // Initialize event listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize button states

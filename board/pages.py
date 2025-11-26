@@ -334,6 +334,51 @@ def get_user_movie_statuses():
         print(f"Error getting user movie statuses: {str(e)}")
         return jsonify({'success': False, 'error': 'Failed to get user movie statuses'}), 500
 
+@bp.route('/api/movie/remove', methods=['POST'])
+@login_required
+def remove_movie():
+    try:
+        data = request.get_json()
+        movie_id = data.get('movie_id')
+        
+        if not movie_id:
+            return jsonify({'error': 'Movie ID is required'}), 400
+            
+        movie = Movie.query.get(movie_id)
+        if not movie:
+            return jsonify({'error': 'Movie not found'}), 404
+            
+        # Remove from all lists
+        removed = False
+        if current_user.is_in_watchlist(movie):
+            current_user.remove_from_watchlist(movie)
+            removed = True
+            
+        if current_user.is_favorite(movie):
+            current_user.favorite_movies.remove(movie)
+            removed = True
+            
+        if current_user.has_watched(movie):
+            current_user.watched_movies.remove(movie)
+            removed = True
+            
+        if removed:
+            db.session.commit()
+            return jsonify({
+                'success': True,
+                'message': 'Movie removed from your library'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Movie not found in any of your lists'
+            }), 404
+            
+    except Exception as e:
+        print(f"Error removing movie: {str(e)}")
+        return jsonify({'error': 'An error occurred while removing the movie'}), 500
+
+
 @bp.route('/api/watched/toggle', methods=['POST'])
 @login_required
 def toggle_watched():

@@ -45,6 +45,13 @@
                     title="{{ 'Mark as not watched' if movie in current_user.watched_movies else 'Mark as watched' }}">
                 <i class="bi {{ 'bi-eye-fill' if movie in current_user.watched_movies else 'bi-eye' }}"></i>
             </button>
+            
+            <!-- Remove Button -->
+            <button class="btn btn-sm btn-outline-danger square-btn ms-1"
+                    onclick="removeFromLibrary('{{ movie.id }}'); event.stopPropagation(); return false;"
+                    title="Remove from library">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
     </div>
 </div>
