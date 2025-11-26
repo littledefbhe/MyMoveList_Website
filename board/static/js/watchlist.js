@@ -230,13 +230,13 @@ async function toggleFavorite(movieId) {
                 button.classList.add('btn-outline-light');
                 if (icon) {
                     icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill', 'text-danger');
+                    icon.classList.add('bi-heart-fill');
                 }
                 button.title = 'Remove from favorites';
 
                 // For full text buttons
                 if (button.textContent.includes('Favorite')) {
-                    button.innerHTML = '<i class="bi bi-heart-fill me-2 text-danger"></i>Favorited';
+                    button.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Favorited';
                 }
             } else {
                 button.classList.add('btn-outline-light');
