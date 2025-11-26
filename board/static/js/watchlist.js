@@ -537,27 +537,30 @@ async function removeFromLibrary(movieId, event) {
             throw new Error(data.error || 'Failed to remove movie');
         }
 
-        // Remove the movie card from the UI
-        const movieCard = document.querySelector(`.movie-card[data-movie-id="${movieId}"]`);
-        if (movieCard) {
-            // Add fade-out animation
-            movieCard.style.transition = 'opacity 0.3s ease';
-            movieCard.style.opacity = '0';
+        // Get all movie cards with this ID across all tabs
+        const allMovieCards = document.querySelectorAll(`.movie-card[data-movie-id="${movieId}"]`);
+        
+        // Fade out and remove all instances
+        allMovieCards.forEach(card => {
+            card.style.transition = 'opacity 0.3s ease';
+            card.style.opacity = '0';
             
-            // Remove the card after the animation
             setTimeout(() => {
-                movieCard.remove();
-                
-                // Update the tab counts
-                updateTabCounts();
-                
-                // Show success message
-                showNotification('Movie removed from your library');
-            }, 300);
-        }
+                card.remove();
+            }, 200);
+        });
+
+        // Update all tab counts
+        updateTabCounts();
+        
+        // Show success message
+        setTimeout(() => {
+            showNotification('Movie removed from your library');
+        }, 300);
+
     } catch (error) {
         console.error('Error removing movie from library:', error);
-        showNotification('Movie removed from your library'); // Show success even if there's an error in the response
+        showNotification('Movie removed from your library');
     }
     
     return false;
@@ -565,32 +568,29 @@ async function removeFromLibrary(movieId, event) {
 
 // Function to update tab counts
 function updateTabCounts() {
-    // Update All tab count
-    const allTab = document.querySelector('#all-tab .badge');
-    if (allTab) {
-        const allMovies = document.querySelectorAll('#all .movie-card').length;
-        allTab.textContent = allMovies;
-    }
-    
-    // Update Watchlist tab count
-    const watchlistTab = document.querySelector('#watchlist-tab .badge');
-    if (watchlistTab) {
-        const watchlistMovies = document.querySelectorAll('#watchlist .movie-card').length;
-        watchlistTab.textContent = watchlistMovies;
-    }
-    
-    // Update Watched tab count
-    const watchedTab = document.querySelector('#watched-tab .badge');
-    if (watchedTab) {
-        const watchedMovies = document.querySelectorAll('#watched .movie-card').length;
-        watchedTab.textContent = watchedMovies;
-    }
-    
-    // Update Favorites tab count
-    const favoritesTab = document.querySelector('#favorites-tab .badge');
-    if (favoritesTab) {
-        const favoriteMovies = document.querySelectorAll('#favorites .movie-card').length;
-        favoritesTab.textContent = favoriteMovies;
+    // Get all tab containers
+    const tabContainers = {
+        'all': document.querySelector('#all .movie-grid'),
+        'watchlist': document.querySelector('#watchlist .movie-grid'),
+        'watched': document.querySelector('#watched .movie-grid'),
+        'favorites': document.querySelector('#favorites .movie-grid')
+    };
+
+    // Update each tab's count
+    for (const [tab, container] of Object.entries(tabContainers)) {
+        const tabElement = document.querySelector(`#${tab}-tab .badge`);
+        if (tabElement) {
+            const count = container ? container.querySelectorAll('.movie-card').length : 0;
+            tabElement.textContent = count;
+            
+            // If count is 0 and we're not on the 'all' tab, show empty state
+            if (count === 0 && tab !== 'all') {
+                const emptyState = document.querySelector(`#${tab} .empty-state`);
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                }
+            }
+        }
     }
 }
 
