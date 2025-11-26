@@ -224,6 +224,7 @@ def my_library():
         favorite_movies=favorite_movies,
         title='My Library',
         total_movies=len(all_movies),
+        watchlist_count=len(watchlist_movies),
         watched_count=len(watched_movies),
         favorites_count=len(favorite_movies)
     )
