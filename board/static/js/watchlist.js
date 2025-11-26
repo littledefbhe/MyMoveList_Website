@@ -96,34 +96,91 @@ async function toggleMovieStatus(endpoint, movieId, errorMessage) {
     }
 }
 
+// Function to update tab count
+function updateTabCount(tabId) {
+    const tabElement = document.querySelector(`#${tabId}-tab`);
+    if (!tabElement) return;
+    
+    const tabContent = document.getElementById(tabId);
+    if (!tabContent) return;
+    
+    // Count the number of movie cards in the tab
+    const movieCount = tabContent.querySelectorAll('.movie-card').length;
+    
+    // Update the badge with the new count
+    let badge = tabElement.querySelector('.badge');
+    if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'badge bg-secondary ms-1';
+        tabElement.appendChild(badge);
+    }
+    badge.textContent = movieCount;
+}
+
 // Helper function to remove movie card from the UI
 function removeMovieCard(movieId, tabId) {
-    const movieCard = document.querySelector(`#${tabId} .movie-card[data-movie-id="${movieId}"]`);
-    if (movieCard) {
-        movieCard.style.opacity = '0';
-        setTimeout(() => {
-            movieCard.remove();
+    // If tabId is 'all', remove from all tabs, otherwise only from the specified tab
+    const tabsToUpdate = tabId === 'all' ? ['all', 'watched', 'favorites'] : [tabId];
+    
+    tabsToUpdate.forEach(tab => {
+        const movieCard = document.querySelector(`#${tab} .movie-card[data-movie-id="${movieId}"]`);
+        if (movieCard) {
+            // Add fade-out class for smooth removal
+            movieCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            movieCard.style.opacity = '0';
+            movieCard.style.transform = 'translateY(20px)';
             
-            // Check if this was the last movie in the tab
-            const tabContent = document.querySelector(`#${tabId}`);
-            const movieGrid = tabContent?.querySelector('.movie-grid');
-            if (movieGrid && movieGrid.children.length === 0) {
-                // Check if empty state already exists
-                const existingEmptyState = tabContent.querySelector('.empty-state');
-                if (!existingEmptyState) {
-                    // Show empty state only if it doesn't already exist
-                    const emptyState = document.createElement('div');
-                    emptyState.className = 'text-center py-5 empty-state';
-                    emptyState.innerHTML = `
-                        <i class="bi ${tabId === 'watched' ? 'bi-eye-slash' : 'bi-heart'}" style="font-size: 3rem; color: var(--text-muted);"></i>
-                        <p class="mt-3">No ${tabId === 'watched' ? 'watched' : 'favorite'} movies yet</p>
-                        <p class="text-muted">${tabId === 'watched' ? 'Mark movies as watched' : 'Add movies to your favorites'} to see them here</p>
-                    `;
-                    tabContent.insertBefore(emptyState, movieGrid);
+            // Remove the movie card after the transition
+            setTimeout(() => {
+                movieCard.remove();
+                
+                // Check if this was the last movie in the tab
+                const tabContent = document.getElementById(tab);
+                const movieGrid = tabContent?.querySelector('.movie-grid');
+                if (movieGrid && movieGrid.children.length === 0) {
+                    // Check if empty state already exists
+                    const existingEmptyState = tabContent.querySelector('.empty-state');
+                    if (!existingEmptyState) {
+                        // Show empty state only if it doesn't already exist
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'text-center py-5 empty-state';
+                        
+                        // Set appropriate empty state message based on the tab
+                        if (tab === 'watched') {
+                            emptyState.innerHTML = `
+                                <i class="bi bi-eye-slash" style="font-size: 3rem; color: var(--text-muted);"></i>
+                                <p class="mt-3">No watched movies yet</p>
+                                <p class="text-muted">Mark movies as watched to see them here</p>
+                            `;
+                        } else if (tab === 'favorites') {
+                            emptyState.innerHTML = `
+                                <i class="bi bi-heart" style="font-size: 3rem; color: var(--text-muted);"></i>
+                                <p class="mt-3">No favorite movies yet</p>
+                                <p class="text-muted">Add movies to your favorites to see them here</p>
+                            `;
+                        } else {
+                            emptyState.innerHTML = `
+                                <i class="bi bi-collection" style="font-size: 3rem; color: var(--text-muted);"></i>
+                                <p class="mt-3">Your library is empty</p>
+                                <p class="text-muted">Add movies to your watchlist to see them here</p>
+                                <a href="${window.location.origin}" class="btn btn-primary mt-3">
+                                    <i class="bi bi-house-door"></i> Browse Movies
+                                </a>
+                            `;
+                        }
+                        
+                        tabContent.appendChild(emptyState);
+                    }
                 }
-            }
-        }, 300);
-    }
+                
+                // Update the tab count for all tabs since a movie might affect multiple tabs
+                updateTabCount('all');
+                updateTabCount('watched');
+                updateTabCount('favorites');
+                
+            }, 300);
+        }
+    });
 }
 
 // Watchlist functionality
