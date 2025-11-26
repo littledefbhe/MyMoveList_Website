@@ -39,7 +39,13 @@
                     </div>
                 </form>
             </div>
-            <div class="auth-buttons">
+            <div class="auth-buttons d-flex align-items-center">
+                <div class="form-check form-switch me-3" title="Toggle dark/light mode">
+                    <input class="form-check-input" type="checkbox" id="darkModeToggle" checked>
+                    <label class="form-check-label" for="darkModeToggle">
+                        <i class="bi bi-moon-stars"></i>
+                    </label>
+                </div>
                 {% if current_user.is_authenticated %}
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
@@ -211,5 +217,34 @@
         });
     </script>
     {% block scripts %}{% endblock %}
+    
+    <script>
+    // Theme switching functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const html = document.documentElement;
+        
+        // Check for saved user preference, if any, on load
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            html.setAttribute('data-bs-theme', 'light');
+            darkModeToggle.checked = false;
+        } else {
+            html.setAttribute('data-bs-theme', 'dark');
+            darkModeToggle.checked = true;
+        }
+        
+        // Toggle theme when switch is clicked
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                html.setAttribute('data-bs-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-bs-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    });
+    </script>
 </body>
 </html>
