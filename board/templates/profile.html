@@ -112,35 +112,6 @@
                     {% endif %}
                 </div>
             </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">Activity</h6>
-                </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        {% if recent_activity %}
-                            {% for activity in recent_activity %}
-                                <div class="timeline-item">
-                                    <div class="timeline-marker"></div>
-                                    <div class="timeline-content">
-                                        <p class="mb-1">
-                                            <strong>{{ activity.movie.title }}</strong>
-                                            <span class="text-muted">was {{ activity.action }}</span>
-                                        </p>
-                                        <small class="text-muted">{{ activity.timestamp|timesince }} ago</small>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="text-center py-4">
-                                <i class="bi bi-activity" style="font-size: 2.5rem; color: #6c757d;"></i>
-                                <p class="mt-2 mb-0">No recent activity</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -190,36 +161,6 @@
     color: #6c757d;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
-
-.timeline {
-    position: relative;
-    padding-left: 2rem;
-}
-
-.timeline-item {
-    position: relative;
-    padding-bottom: 1.5rem;
-    border-left: 2px solid #e9ecef;
-    padding-left: 1.5rem;
-}
-
-.timeline-item:last-child {
-    border-left-color: transparent;
-}
-
-.timeline-marker {
-    position: absolute;
-    left: -8px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background-color: var(--accent-color);
-    top: 4px;
-}
-
-.timeline-content {
-    padding-bottom: 0.5rem;
 }
 
 .card {
