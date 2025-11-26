@@ -22,7 +22,7 @@
                     <!-- Watchlist Button -->
                     <button class="btn btn-outline-light"
                             onclick="toggleWatchlist('{{ movie.id }}');"
-                            title="{% if in_watchlist %}Remove from watchlist{% else %}Add to watchlist%}">
+                            title="{% if in_watchlist %}Remove from watchlist{% else %}Add to watchlist{% endif %}">
                         <i class="bi {% if in_watchlist %}bi-bookmark-check-fill{% else %}bi-bookmark-plus{% endif %}"></i>
                         {% if in_watchlist %}In Watchlist{% else %}Add to Watchlist{% endif %}
                     </button>
