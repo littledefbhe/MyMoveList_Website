@@ -3,21 +3,125 @@
 {% block title %}Community - MyMovieList{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="mb-4">Community</h1>
-            <div class="card">
-                <div class="card-body">
-                    <p class="lead">Welcome to the MyMovieList community!</p>
-                    <p>This is where you can connect with other movie enthusiasts, see what they're watching, and share your thoughts on the latest films.</p>
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle-fill me-2"></i>
-                        Community features are coming soon! Check back later for updates.
-                    </div>
-                </div>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Community</h1>
+        <div class="d-flex align-items-center">
+            <div class="input-group" style="max-width: 300px;">
+                <span class="input-group-text bg-dark border-dark"><i class="bi bi-search text-white"></i></span>
+                <input type="text" class="form-control bg-dark text-white border-dark" placeholder="Search users..." id="userSearch">
             </div>
         </div>
     </div>
+    
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4" id="userGrid">
+        {% for user in users %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div class="card-body text-center p-3">
+                    <div class="mb-3">
+                        <div class="mx-auto position-relative" style="width: 80px; height: 80px;">
+                            <div class="avatar-placeholder rounded-circle w-100 h-100 d-flex align-items-center justify-content-center bg-dark">
+                                <i class="bi bi-person-fill text-white-50" style="font-size: 2.5rem;"></i>
+                            </div>
+                            {% if user.last_login %}
+                            <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1 border border-2 border-dark" 
+                                  title="Last active {{ user.last_login|timesince }} ago">
+                                <span class="visually-hidden">Online</span>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-1 text-truncate" title="{{ user.username }}">
+                        {{ user.username }}
+                    </h5>
+                    <p class="text-muted small mb-3">
+                        Member since {{ user.created_at.strftime('%b %Y') }}
+                    </p>
+                    
+                    <div class="d-flex justify-content-center gap-3 text-center mb-3">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ user.stats.watchlist_count }}</div>
+                            <div class="stat-label">Watchlist</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ user.stats.watched_count }}</div>
+                            <div class="stat-label">Watched</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ user.stats.favorites_count }}</div>
+                            <div class="stat-label">Likes</div>
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('pages.profile', user_id=user.id) }}" 
+                       class="btn btn-sm btn-outline-primary w-100">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+
+{% endblock %}
+
+{% block styles %}
+<style>
+.hover-shadow {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-shadow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.stat-value {
+    font-weight: 600;
+    line-height: 1;
+    color: var(--accent-color);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.avatar-placeholder {
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+#userSearch:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--accent-rgb), 0.25);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('userSearch');
+    const userGrid = document.getElementById('userGrid');
+    const userCards = Array.from(userGrid.getElementsByClassName('col'));
+
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        userCards.forEach(card => {
+            const username = card.querySelector('.card-title').textContent.toLowerCase();
+            if (username.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

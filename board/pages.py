@@ -423,28 +423,55 @@ def toggle_watched():
         return jsonify({'error': 'An error occurred while updating watched status'}), 500
 
 @bp.route('/profile')
+@bp.route('/profile/<int:user_id>')
 @login_required
-def profile():
+def profile(user_id=None):
+    # If no user_id is provided, show current user's profile
+    if user_id is None:
+        user = current_user
+    else:
+        # Get the requested user or return 404 if not found
+        user = User.query.get_or_404(user_id)
+    
+    # Check if viewing own profile
+    is_own_profile = (user.id == current_user.id)
+    
     # Get user's movie stats
     stats = {
-        'watchlist_count': current_user.watchlist.count(),
-        'watched_count': current_user.watched_movies.count(),
-        'favorites_count': current_user.favorite_movies.count()
+        'watchlist_count': user.watchlist.count(),
+        'watched_count': user.watched_movies.count(),
+        'favorites_count': user.favorite_movies.count()
     }
     
-    # Get recently added movies (last 6)
-    recent_movies = current_user.watchlist.union(
-        current_user.watched_movies,
-        current_user.favorite_movies
-    ).order_by(Movie.created_at.desc()).limit(6).all()
+    # Get recently watched movies (last 6)
+    recent_movies = user.watched_movies.order_by(Movie.created_at.desc()).limit(6).all()
+    
+    # Get all watched movies for the user
+    watched_movies = user.watched_movies.order_by(Movie.title).all()
     
     return render_template(
         'profile.html',
+        user=user,
         stats=stats,
-        recent_movies=recent_movies
+        recent_movies=recent_movies,
+        watched_movies=watched_movies,
+        is_own_profile=is_own_profile
     )
 
 @bp.route('/community')
 def community():
-    """Community page showing user interactions and activity"""
-    return render_template('community.html')
+    """Community page showing user profiles and activity"""
+    # Get all active users, ordered by most recently active
+    users = User.query.filter_by(is_active=True)\
+                    .order_by(User.last_login.desc())\
+                    .limit(50).all()  # Limit to 50 most recent users
+    
+    # Add stats to each user
+    for user in users:
+        user.stats = {
+            'watchlist_count': user.watchlist.count(),
+            'watched_count': user.watched_movies.count(),
+            'favorites_count': user.favorite_movies.count()
+        }
+    
+    return render_template('community.html', users=users)

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}My Profile - MyMovieList{% endblock %}
+{% block title %}{% if is_own_profile %}My Profile{% else %}{{ user.username }}'s Profile{% endif %} - MyMovieList{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -13,9 +13,10 @@
                             <i class="bi bi-person-circle" style="font-size: 5rem; color: #6c757d;"></i>
                         </div>
                     </div>
-                    <h4 class="mb-1">{{ current_user.username }}</h4>
-                    <p class="text-muted mb-3">Member since {{ current_user.created_at.strftime('%B %Y') }}</p>
+                    <h4 class="mb-1">{{ user.username }}{% if not is_own_profile %}'s Profile{% endif %}</h4>
+                    <p class="text-muted mb-3">Member since {{ user.created_at.strftime('%B %Y') }}</p>
                     
+                    {% if is_own_profile %}
                     <div class="d-flex justify-content-center gap-2 mb-3">
                         <a href="#" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-pencil-square"></i> Edit Profile
@@ -24,6 +25,7 @@
                             <i class="bi bi-gear"></i> Settings
                         </a>
                     </div>
+                    {% endif %}
                     
                     <div class="stats-container">
                         <div class="stat-item">
@@ -49,15 +51,15 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label small text-muted mb-1">Username</label>
-                        <div class="form-control bg-dark text-white">{{ current_user.username }}</div>
+                        <div class="form-control bg-dark text-white">{{ user.username }}</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label small text-muted mb-1">Email</label>
-                        <div class="form-control bg-dark text-white">{{ current_user.email }}</div>
+                        <div class="form-control bg-dark text-white">{% if is_own_profile %}{{ user.email }}{% else %}<em class="text-muted">Hidden</em>{% endif %}</div>
                     </div>
                     <div class="mb-0">
                         <label class="form-label small text-muted mb-1">Member Since</label>
-                        <div class="form-control bg-dark text-white">{{ current_user.created_at.strftime('%B %d, %Y') }}</div>
+                        <div class="form-control bg-dark text-white">{{ user.created_at.strftime('%B %d, %Y') }}</div>
                     </div>
                 </div>
             </div>
@@ -66,8 +68,8 @@
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">Recently Added</h6>
-                    <a href="{{ url_for('pages.my_library') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    <h6 class="mb-0">Recently Watched</h6>
+                    <button onclick="toggleWatchedMovies()" class="btn btn-sm btn-outline-primary" id="view-all-btn">View All</button>
                 </div>
                 <div class="card-body">
                     {% if recent_movies %}
@@ -75,28 +77,22 @@
                             {% for movie in recent_movies %}
                                 <div class="col">
                                     <div class="card h-100 border-0 shadow-sm">
-                                        {% if movie.poster_url %}
-                                            <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
-                                        {% else %}
-                                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                                <i class="bi bi-film" style="font-size: 3rem; color: #6c757d;"></i>
-                                            </div>
-                                        {% endif %}
-                                        <div class="card-body p-2">
-                                            <h6 class="card-title mb-1 text-truncate">{{ movie.title }}</h6>
-                                            <p class="card-text small text-muted mb-1">{{ movie.release_year }}</p>
-                                            <div class="d-flex gap-1">
-                                                {% if movie in current_user.watchlist %}
-                                                    <span class="badge bg-primary">Watchlist</span>
-                                                {% endif %}
-                                                {% if movie in current_user.watched_movies %}
+                                        <a href="{{ url_for('pages.movie_detail', movie_id=movie.id) }}" class="text-decoration-none text-dark">
+                                            {% if movie.poster_url %}
+                                                <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
+                                            {% else %}
+                                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                    <i class="bi bi-film" style="font-size: 3rem; color: #6c757d;"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1 text-truncate">{{ movie.title }}</h6>
+                                                <p class="card-text small text-muted mb-1">{{ movie.release_year }}</p>
+                                                <div class="d-flex gap-1">
                                                     <span class="badge bg-success">Watched</span>
-                                                {% endif %}
-                                                {% if movie in current_user.favorite_movies %}
-                                                    <span class="badge bg-warning text-dark">Favorite</span>
-                                                {% endif %}
+                                                </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -104,10 +100,52 @@
                     {% else %}
                         <div class="text-center py-4">
                             <i class="bi bi-collection" style="font-size: 2.5rem; color: #6c757d;"></i>
-                            <p class="mt-2 mb-0">No movies added yet</p>
-                            <a href="{{ url_for('pages.home') }}" class="btn btn-sm btn-primary mt-2">
-                                <i class="bi bi-plus-circle"></i> Add Movies
-                            </a>
+                            <p class="mt-2 mb-0">No watched movies yet</p>
+                            {% if is_own_profile %}
+                                <a href="{{ url_for('pages.home') }}" class="btn btn-sm btn-primary mt-2">
+                                    <i class="bi bi-plus-circle"></i> Browse Movies
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- All Watched Movies Section (Hidden by default) -->
+            <div class="card mb-4 d-none" id="watched-movies">
+                <div class="card-header">
+                    <h6 class="mb-0">All Watched Movies ({{ watched_movies|length }})</h6>
+                </div>
+                <div class="card-body">
+                    {% if watched_movies %}
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                            {% for movie in watched_movies %}
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <a href="{{ url_for('pages.movie_detail', movie_id=movie.id) }}" class="text-decoration-none text-dark">
+                                            {% if movie.poster_url %}
+                                                <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
+                                            {% else %}
+                                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                    <i class="bi bi-film" style="font-size: 3rem; color: #6c757d;"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1 text-truncate">{{ movie.title }}</h6>
+                                                <p class="card-text small text-muted mb-1">{{ movie.release_year }}</p>
+                                                <div class="d-flex gap-1">
+                                                    <span class="badge bg-success">Watched</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-collection" style="font-size: 2.5rem; color: #6c757d;"></i>
+                            <p class="mt-2 mb-0">No watched movies yet</p>
                         </div>
                     {% endif %}
                 </div>
@@ -117,7 +155,28 @@
 </div>
 {% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+    function toggleWatchedMovies() {
+        const watchedMoviesSection = document.getElementById('watched-movies');
+        const viewAllBtn = document.getElementById('view-all-btn');
+        
+        if (watchedMoviesSection.classList.contains('d-none')) {
+            watchedMoviesSection.classList.remove('d-none');
+            viewAllBtn.textContent = 'Hide';
+            // Scroll to the section
+            watchedMoviesSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            watchedMoviesSection.classList.add('d-none');
+            viewAllBtn.textContent = 'View All';
+        }
+    }
+</script>
+{% endblock %}
+
 {% block styles %}
+{{ super() }}
 <style>
 .avatar-container {
     position: relative;
