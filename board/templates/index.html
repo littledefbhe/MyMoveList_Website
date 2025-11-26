@@ -37,6 +37,7 @@
                         <span class="certification">{{ movie.certification }}</span>
                         <span class="runtime">{{ movie.runtime_minutes }} min</span>
                     </div>
+{% if current_user.is_authenticated %}
 <div class="movie-actions d-flex gap-2">
     <!-- Watchlist Button -->
     <button class="btn btn-sm btn-outline-light square-btn"
@@ -59,6 +60,7 @@
         <i class="bi {{ 'bi-eye-fill' if movie in current_user.watched_movies else 'bi-eye' }}"></i>
     </button>
 </div>
+{% endif %}
                 </div>
             </div>
             {% endfor %}
