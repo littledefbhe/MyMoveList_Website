@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user, login_user, logout_user
 from urllib.parse import urlparse as url_parse
-from .models import db, User, Movie, Genre, MovieStats, watched
+from .models import db, User, Movie, Genre, MovieStats, watched, movie_genres
 from .forms import LoginForm, RegistrationForm
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
@@ -12,24 +12,48 @@ bp = Blueprint("pages", __name__)
 # Define routes using the blueprint
 @bp.route("/")
 def home():
-    # Get all genres that have movies
-    genres = Genre.query.join(Genre.movies).group_by(Genre.id).order_by(Genre.name).all()
-    
-    # Create a dictionary to hold movies by genre
-    movies_by_genre = {}
-    
-    # For each genre, get top 5 movies
-    for genre in genres:
-        movies = Movie.query\
-            .join(Movie.genres)\
-            .filter(Genre.id == genre.id)\
-            .options(joinedload(Movie.stats))\
-            .order_by(Movie.rating.desc())\
-            .limit(5)\
+    # Use no_autoflush to prevent premature flushes
+    with db.session.no_autoflush:
+        # Get all genres that have at least one movie
+        genres = db.session.query(Genre)\
+            .join(movie_genres, Genre.id == movie_genres.c.genre_id)\
+            .group_by(Genre.id)\
+            .order_by(Genre.name)\
             .all()
+        
+        if not genres:
+            return render_template("index.html", movies_by_genre={})
+        
+        # Get all movie stats in one query
+        stats_map = {stat.movie_id: stat for stat in db.session.query(MovieStats).all()}
+        
+        # Get all movie-genre relationships
+        genre_movies = {}
+        for mg in db.session.query(movie_genres).all():
+            if mg.genre_id not in genre_movies:
+                genre_movies[mg.genre_id] = []
+            genre_movies[mg.genre_id].append(mg.movie_id)
+        
+        movies_by_genre = {}
+        
+        # Process each genre
+        for genre in genres:
+            if genre.id not in genre_movies:
+                continue
+                
+            # Get top 5 movies for this genre using ORM
+            movies = db.session.query(Movie)\
+                .filter(Movie.id.in_(genre_movies[genre.id]))\
+                .order_by(db.desc(Movie.rating))\
+                .limit(5)\
+                .all()
             
-        if movies:  # Only add genres that have movies
-            movies_by_genre[genre] = movies
+            # Attach stats to movies
+            for movie in movies:
+                movie.stats = stats_map.get(movie.id)
+                
+            if movies:
+                movies_by_genre[genre] = movies
     
     return render_template("index.html", movies_by_genre=movies_by_genre)
 

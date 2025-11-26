@@ -160,8 +160,8 @@ class Movie(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    genres = db.relationship('Genre', secondary=movie_genres, lazy='subquery',
-                           backref=db.backref('movies', lazy=True))
+    genres = db.relationship('Genre', secondary=movie_genres, lazy='dynamic',
+                           backref=db.backref('movies', lazy='dynamic'))
     stats = db.relationship('MovieStats', backref='movie', uselist=False, lazy=True)
     
     def __repr__(self):
