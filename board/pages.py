@@ -424,17 +424,17 @@ def toggle_watched():
 
 @bp.route('/profile')
 @bp.route('/profile/<int:user_id>')
-@login_required
 def profile(user_id=None):
-    # If no user_id is provided, show current user's profile
+    # If no user_id is provided and user is authenticated, show their own profile
     if user_id is None:
-        user = current_user
-    else:
-        # Get the requested user or return 404 if not found
-        user = User.query.get_or_404(user_id)
+        if current_user.is_authenticated:
+            return redirect(url_for('pages.profile', user_id=current_user.id))
+        else:
+            return redirect(url_for('pages.signin', next=request.url))
     
-    # Check if viewing own profile
-    is_own_profile = (user.id == current_user.id)
+    # Get the user whose profile we're viewing
+    user = User.query.get_or_404(user_id)
+    is_own_profile = current_user.is_authenticated and (current_user.id == user_id)
     
     # Get user's movie stats
     stats = {
