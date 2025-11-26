@@ -306,6 +306,25 @@ def toggle_favorite():
         return jsonify({'error': 'An error occurred while updating your favorites'}), 500
 
 
+@bp.route('/api/user/movie-statuses')
+@login_required
+def get_user_movie_statuses():
+    """Get the current user's watchlist, favorites, and watched movie IDs"""
+    try:
+        watchlist_ids = [movie.id for movie in current_user.watchlist.all()]
+        favorite_ids = [movie.id for movie in current_user.favorite_movies.all()]
+        watched_ids = [movie.id for movie in current_user.watched_movies.all()]
+        
+        return jsonify({
+            'success': True,
+            'watchlist': watchlist_ids,
+            'favorites': favorite_ids,
+            'watched': watched_ids
+        })
+    except Exception as e:
+        print(f"Error getting user movie statuses: {str(e)}")
+        return jsonify({'success': False, 'error': 'Failed to get user movie statuses'}), 500
+
 @bp.route('/api/watched/toggle', methods=['POST'])
 @login_required
 def toggle_watched():
@@ -341,7 +360,8 @@ def toggle_watched():
             'status': status,
             'button_text': button_text,
             'watched_count': watched_count,
-            'movie_id': movie_id
+            'movie_id': movie_id,
+            'is_watched': not has_watched  # Return the new state
         })
         
     except Exception as e:
