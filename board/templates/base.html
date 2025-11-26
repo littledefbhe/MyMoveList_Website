@@ -2,44 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}MyMovieList - Discover & Rate Movies{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        :root {
-            --bs-body-bg: #0a0a0a;
-            --bs-body-color: #ffffff;
-            --primary-color: #0f0f0f;
-            --secondary-color: #4a4a4a;
-            --accent-color: #3a7bff;
-            --accent-hover: #5c91ff;
-            --background-color: #0a0a0a;
-            --card-bg: #121212;
-            --card-hover: #1e1e1e;
-            --text-color: #ffffff;
-            --text-light: #b3b3b3;
-            --text-muted: #6d6d6d;
-            --border-color: #2a2a2a;
-        }
-        
-        [data-bs-theme="light"] {
-            --bs-body-bg: #ffffff;
-            --bs-body-color: #212529;
-            --primary-color: #f8f9fa;
-            --secondary-color: #6c757d;
-            --accent-color: #0d6efd;
-            --accent-hover: #0b5ed7;
-            --background-color: #ffffff;
-            --card-bg: #f8f9fa;
-            --card-hover: #e9ecef;
-            --text-color: #212529;
-            --text-light: #495057;
-            --text-muted: #6c757d;
-            --border-color: #dee2e6;
-        }
-    </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/movie_transitions.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +16,19 @@
 </head>
 <body class="{% if request.endpoint == 'pages.my_library' %}library-page{% endif %}">
     <header class="header">
-        <div class="header-top">
+        <!-- Mobile Header -->
+        <div class="mobile-header d-lg-none">
+            <button class="menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <h1 class="mobile-logo">MyMovieList</h1>
+            <div class="mobile-search-icon">
+                <i class="bi bi-search" id="mobileSearchToggle"></i>
+            </div>
+        </div>
+
+        <!-- Desktop Header -->
+        <div class="header-top d-none d-lg-flex">
             <h1>MyMovieList</h1>
             <div class="search-container">
                 <form action="{{ url_for('pages.search') }}" method="GET" class="search-form" id="searchForm">
@@ -67,18 +46,12 @@
                         >
                         <button type="submit" class="search-button" aria-label="Search">
                             <i class="bi bi-search"></i>
-                            <span class="d-none d-sm-inline">Search</span>
+                            <span>Search</span>
                         </button>
                     </div>
                 </form>
             </div>
-            <div class="auth-buttons d-flex align-items-center">
-                <div class="form-check form-switch me-3" title="Toggle dark/light mode">
-                    <input class="form-check-input" type="checkbox" id="darkModeToggle" checked>
-                    <label class="form-check-label" for="darkModeToggle">
-                        <i class="bi bi-moon-stars"></i>
-                    </label>
-                </div>
+            <div class="auth-buttons">
                 {% if current_user.is_authenticated %}
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
@@ -97,15 +70,82 @@
             </div>
         </div>
         
-        <!-- Main Navigation -->
-        <nav class="main-nav">
+        <!-- Mobile Search Bar -->
+        <div class="mobile-search-container d-lg-none" id="mobileSearchContainer">
+            <form action="{{ url_for('pages.search') }}" method="GET" class="search-form">
+                <div class="search-bar">
+                    <i class="bi bi-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        value="{{ search_query if search_query is defined else '' }}" 
+                        placeholder="Search for movies..." 
+                        class="search-input"
+                        aria-label="Search movies"
+                        required
+                    >
+                    <button type="submit" class="search-button" aria-label="Search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <nav class="mobile-menu" id="mobileMenu">
+            <div class="mobile-menu-header">
+                <h3>Menu</h3>
+                <button class="close-menu" id="closeMobileMenu">&times;</button>
+            </div>
+            <ul class="mobile-nav-links">
+                <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}">
+                    <a href="{{ url_for('pages.home') }}"><i class="bi bi-house-door"></i> Home</a>
+                </li>
+                <li class="{% if request.endpoint == 'pages.top_movies' %}active{% endif %}">
+                    <a href="{{ url_for('pages.top_movies') }}"><i class="bi bi-trophy"></i> Top Movies</a>
+                </li>
+                <li class="{% if request.endpoint == 'pages.community' %}active{% endif %}">
+                    <a href="{{ url_for('pages.community') }}"><i class="bi bi-people"></i> Community</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="{% if request.endpoint == 'pages.my_library' %}active{% endif %}">
+                    <a href="{{ url_for('pages.my_library') }}"><i class="bi bi-collection"></i> My Library</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('pages.profile') }}"><i class="bi bi-person"></i> Profile</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('pages.signout') }}" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('pages.signin') }}" class="text-primary"><i class="bi bi-box-arrow-in-right"></i> Sign In</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('pages.signup') }}" class="text-primary"><i class="bi bi-person-plus"></i> Sign Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        
+        <!-- Desktop Navigation -->
+        <nav class="main-nav d-none d-lg-block">
             <div class="nav-container">
                 <ul class="nav-links">
-                    <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}"><a href="{{ url_for('pages.home') }}">Home</a></li>
-                    <li class="{% if request.endpoint == 'pages.top_movies' %}active{% endif %}"><a href="{{ url_for('pages.top_movies') }}">Top Movies</a></li>
-                    <li class="{% if request.endpoint == 'pages.community' %}active{% endif %}"><a href="{{ url_for('pages.community') }}">Community</a></li>
+                    <li class="{% if request.endpoint == 'pages.home' %}active{% endif %}">
+                        <a href="{{ url_for('pages.home') }}">Home</a>
+                    </li>
+                    <li class="{% if request.endpoint == 'pages.top_movies' %}active{% endif %}">
+                        <a href="{{ url_for('pages.top_movies') }}">Top Movies</a>
+                    </li>
+                    <li class="{% if request.endpoint == 'pages.community' %}active{% endif %}">
+                        <a href="{{ url_for('pages.community') }}">Community</a>
+                    </li>
                     {% if current_user.is_authenticated %}
-                    <li class="{% if request.endpoint == 'pages.my_library' %}active{% endif %}"><a href="{{ url_for('pages.my_library') }}">My Library</a></li>
+                    <li class="{% if request.endpoint == 'pages.my_library' %}active{% endif %}">
+                        <a href="{{ url_for('pages.my_library') }}">My Library</a>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
@@ -135,17 +175,20 @@
             const searchForm = document.getElementById('searchForm');
             
             // Simple form validation
-            searchForm.addEventListener('submit', function(e) {
-                const query = searchInput.value.trim();
-                if (query.length === 0) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    const query = searchInput ? searchInput.value.trim() : '';
+                    if (query.length === 0) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
         });
     </script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script src="{{ url_for('static', filename='js/watchlist.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mobile.js') }}"></script>
     <style>
         /* Dropdown menu styles */
         .dropdown-menu {
@@ -251,36 +294,5 @@
     </script>
     {% block scripts %}{% endblock %}
     
-    <script>
-    // Theme switching functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const html = document.documentElement;
-        
-        // Apply theme based on saved preference or system preference
-        function applyTheme(theme) {
-            if (theme === 'light' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-                html.setAttribute('data-bs-theme', 'light');
-                document.body.style.backgroundColor = '#ffffff';
-                darkModeToggle.checked = false;
-            } else {
-                html.setAttribute('data-bs-theme', 'dark');
-                document.body.style.backgroundColor = '#0a0a0a';
-                darkModeToggle.checked = true;
-            }
-        }
-        
-        // Check for saved user preference, if any, on load
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
-        
-        // Toggle theme when switch is clicked
-        darkModeToggle.addEventListener('change', function() {
-            const theme = this.checked ? 'dark' : 'light';
-            localStorage.setItem('theme', theme);
-            applyTheme(theme);
-        });
-    });
-    </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user, login_user, logout_user
 from urllib.parse import urlparse as url_parse
-from .models import db, User, Movie, Genre, MovieStats
+from .models import db, User, Movie, Genre, MovieStats, watched
 from .forms import LoginForm, RegistrationForm
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
@@ -444,10 +444,19 @@ def profile(user_id=None):
     }
     
     # Get recently watched movies (last 6)
-    recent_movies = user.watched_movies.order_by(Movie.created_at.desc()).limit(6).all()
+    recent_movies = db.session.query(Movie)\
+        .join(watched, Movie.id == watched.c.movie_id)\
+        .filter(watched.c.user_id == user_id)\
+        .order_by(watched.c.watched_at.desc())\
+        .limit(6)\
+        .all()
     
-    # Get all watched movies for the user
-    watched_movies = user.watched_movies.order_by(Movie.title).all()
+    # Get all watched movies for the user, ordered by watch date (newest first)
+    watched_movies = db.session.query(Movie)\
+        .join(watched, Movie.id == watched.c.movie_id)\
+        .filter(watched.c.user_id == user_id)\
+        .order_by(watched.c.watched_at.desc())\
+        .all()
     
     return render_template(
         'profile.html',
