@@ -108,15 +108,19 @@ function removeMovieCard(movieId, tabId) {
             const tabContent = document.querySelector(`#${tabId}`);
             const movieGrid = tabContent?.querySelector('.movie-grid');
             if (movieGrid && movieGrid.children.length === 0) {
-                // Show empty state
-                const emptyState = document.createElement('div');
-                emptyState.className = 'text-center py-5 empty-state';
-                emptyState.innerHTML = `
-                    <i class="bi ${tabId === 'watched' ? 'bi-eye-slash' : 'bi-heart'}" style="font-size: 3rem; color: var(--text-muted);"></i>
-                    <p class="mt-3">No ${tabId === 'watched' ? 'watched' : 'favorite'} movies yet</p>
-                    <p class="text-muted">${tabId === 'watched' ? 'Mark movies as watched' : 'Add movies to your favorites'} to see them here</p>
-                `;
-                tabContent.insertBefore(emptyState, movieGrid);
+                // Check if empty state already exists
+                const existingEmptyState = tabContent.querySelector('.empty-state');
+                if (!existingEmptyState) {
+                    // Show empty state only if it doesn't already exist
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'text-center py-5 empty-state';
+                    emptyState.innerHTML = `
+                        <i class="bi ${tabId === 'watched' ? 'bi-eye-slash' : 'bi-heart'}" style="font-size: 3rem; color: var(--text-muted);"></i>
+                        <p class="mt-3">No ${tabId === 'watched' ? 'watched' : 'favorite'} movies yet</p>
+                        <p class="text-muted">${tabId === 'watched' ? 'Mark movies as watched' : 'Add movies to your favorites'} to see them here</p>
+                    `;
+                    tabContent.insertBefore(emptyState, movieGrid);
+                }
             }
         }, 300);
     }
