@@ -209,13 +209,21 @@ def my_library():
         .order_by(Movie.title)\
         .all()
     
+    # Combine all movies and remove duplicates
+    all_movies = {}
+    for movie in watchlist_movies + watched_movies + favorite_movies:
+        all_movies[movie.id] = movie
+    all_movies = list(all_movies.values())
+    all_movies.sort(key=lambda x: x.title)
+    
     return render_template(
         'library.html',
+        all_movies=all_movies,
         watchlist_movies=watchlist_movies,
         watched_movies=watched_movies,
         favorite_movies=favorite_movies,
         title='My Library',
-        total_movies=len(watchlist_movies),
+        total_movies=len(all_movies),
         watched_count=len(watched_movies),
         favorites_count=len(favorite_movies)
     )
