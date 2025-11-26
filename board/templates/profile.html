@@ -173,25 +173,6 @@
         }
     }
 
-    // Handle profile picture preview
-    document.addEventListener('DOMContentLoaded', function() {
-        const profilePicInput = document.getElementById('profilePicture');
-        const profilePicPreview = document.getElementById('profilePicPreview');
-        
-        if (profilePicInput && profilePicPreview) {
-            profilePicInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        profilePicPreview.src = e.target.result;
-                        profilePicPreview.classList.remove('d-none');
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    });
 </script>
 <!-- Edit Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
@@ -201,21 +182,9 @@
                 <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editProfileForm" action="{{ url_for('pages.update_profile') }}" method="POST" enctype="multipart/form-data">
+            <form id="editProfileForm" action="{{ url_for('pages.update_profile') }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <div class="position-relative d-inline-block">
-                            <img id="profilePicPreview" src="{{ url_for('static', filename='images/default-avatar.png') }}" 
-                                 class="rounded-circle border border-3 border-primary" 
-                                 style="width: 120px; height: 120px; object-fit: cover;"
-                                 alt="Profile Picture">
-                            <label for="profilePicture" class="position-absolute bottom-0 end-0 bg-primary rounded-circle p-2" style="cursor: pointer;">
-                                <i class="bi bi-camera-fill text-white"></i>
-                            </label>
-                            <input type="file" id="profilePicture" name="profile_picture" class="d-none" accept="image/*">
-                        </div>
-                    </div>
                     
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>

@@ -485,18 +485,6 @@ def update_profile():
         # Update bio
         current_user.bio = request.form.get('bio', '')
         
-        # Handle profile picture upload
-        if 'profile_picture' in request.files:
-            file = request.files['profile_picture']
-            if file.filename != '':
-                # In a production app, you'd want to:
-                # 1. Generate a unique filename
-                # 2. Save the file to a dedicated uploads folder
-                # 3. Resize/crop the image if needed
-                # 4. Save the filename to the user's profile_picture field
-                # For now, we'll just store the filename
-                current_user.profile_picture = file.filename
-        
         db.session.commit()
         flash('Profile updated successfully!', 'success')
         
