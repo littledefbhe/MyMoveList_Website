@@ -227,27 +227,41 @@ async function toggleWatchlist(movieId) {
             if (data.status === 'added to') {
                 button.classList.add('btn-outline-light');
                 if (icon) {
-                    icon.classList.remove('bi-bookmark-plus');
-                    icon.classList.add('bi-bookmark-check-fill');
+                    icon.classList.remove('bi-plus-circle', 'bi-bookmark-plus');
+                    icon.classList.add('bi-dash-circle', 'bi-bookmark-check-fill');
                 }
                 button.title = 'Remove from watchlist';
 
                 // For full text buttons
                 if (button.textContent.includes('Add to Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-check-fill me-2"></i>In Watchlist';
+                } else if (button.textContent.includes('Add to Watchlist')) {
+                    button.innerHTML = '<i class="bi bi-dash-circle me-2"></i>Remove from Watchlist';
+                } else if (button.textContent.includes('In Watchlist')) {
+                    button.innerHTML = '<i class="bi bi-bookmark-check-fill me-2"></i>In Watchlist';
+                } else {
+                    // For the movie detail page button
+                    button.innerHTML = button.innerHTML.replace('bi-plus-circle', 'bi-dash-circle')
+                                                     .replace('Add to Watchlist', 'Remove from Watchlist');
                 }
                 showNotification('Movie added to your watchlist');
             } else {
                 button.classList.add('btn-outline-light');
                 if (icon) {
-                    icon.classList.remove('bi-bookmark-check-fill');
-                    icon.classList.add('bi-bookmark-plus');
+                    icon.classList.remove('bi-dash-circle', 'bi-bookmark-check-fill');
+                    icon.classList.add('bi-plus-circle', 'bi-bookmark-plus');
                 }
                 button.title = 'Add to watchlist';
 
                 // For full text buttons
-                if (button.textContent.includes('In Watchlist')) {
+                if (button.textContent.includes('Remove from Watchlist')) {
+                    button.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add to Watchlist';
+                } else if (button.textContent.includes('In Watchlist')) {
                     button.innerHTML = '<i class="bi bi-bookmark-plus me-2"></i>Add to Watchlist';
+                } else {
+                    // For the movie detail page button
+                    button.innerHTML = button.innerHTML.replace('bi-dash-circle', 'bi-plus-circle')
+                                                     .replace('Remove from Watchlist', 'Add to Watchlist');
                 }
                 showNotification('Movie removed from your watchlist');
 
