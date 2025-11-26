@@ -198,11 +198,26 @@ def my_library():
         .order_by(Movie.title)\
         .all()
     
+    # Get watched and favorited movies
+    watched_movies = current_user.watched_movies\
+        .options(joinedload(Movie.stats))\
+        .order_by(Movie.title)\
+        .all()
+    
+    favorite_movies = current_user.favorite_movies\
+        .options(joinedload(Movie.stats))\
+        .order_by(Movie.title)\
+        .all()
+    
     return render_template(
         'library.html',
         watchlist_movies=watchlist_movies,
+        watched_movies=watched_movies,
+        favorite_movies=favorite_movies,
         title='My Library',
-        total_movies=len(watchlist_movies)
+        total_movies=len(watchlist_movies),
+        watched_count=len(watched_movies),
+        favorites_count=len(favorite_movies)
     )
 
 @bp.route('/api/watchlist/toggle', methods=['POST'])
